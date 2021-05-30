@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# shellcheck source=../lib/utils.bash
+source "$(dirname "$0")/../lib/utils.bash"
+
+# According to https://asdf-vm.com/#/plugins-create?id=required-scripts
+# a `download` script is required. However, it doesn't really make sense
+# for this plugin... Maybe "install" pipx itself to `downloads`?
+
+exit 0
+
