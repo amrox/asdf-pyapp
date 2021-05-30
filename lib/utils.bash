@@ -49,7 +49,7 @@ set_python_path() {
 
   local paths=("/usr/bin/python3" "$(which python3)")
 
-  for p in ${paths[@]}; do
+  for p in "${paths[@]}"; do
     local version=$(get_python_version "$p")
     if [[ $version =~ ^([0-9]+)\.([0-9]+)\. ]]; then
       local version_major=${BASH_REMATCH[1]}
@@ -76,7 +76,7 @@ get_package_versions() {
 
   local pip_install_args=""
   local version_output_raw
-  if [ ${pip_version_major} -gt 20 ]; then
+  if [ "${pip_version_major}" -gt 20 ]; then
     pip_install_args+=" --use-deprecated=legacy-resolver"
   fi
   version_output_raw=$("${ASDF_PYAPP_PYTHON_PATH}" -m pip install ${pip_install_args} "${package}==" 2>&1) || true
