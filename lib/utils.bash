@@ -1,74 +1,139 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for pyapp.
-GH_REPO="https://github.com/amrox/pyapp"
-TOOL_NAME="pyapp"
-TOOL_TEST="flake8 --help"
+ASDF_PYAPP_MY_NAME=asdf-pyapp
 
 fail() {
-  echo -e "asdf-$TOOL_NAME: $*"
+  echo -e "${ASDF_PYAPP_MY_NAME}: [ERROR] $*"
   exit 1
 }
 
-curl_opts=(-fsSL)
-
-# NOTE: You might want to remove this if pyapp is not hosted on GitHub releases.
-if [ -n "${GITHUB_API_TOKEN:-}" ]; then
-  curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
-fi
-
-sort_versions() {
-  sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
-    LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
+log() {
+  echo -e "${ASDF_PYAPP_MY_NAME}: $*"
 }
 
-list_github_tags() {
-  git ls-remote --tags --refs "$GH_REPO" |
-    grep -o 'refs/tags/.*' | cut -d/ -f3- |
-    sed 's/^v//' # NOTE: You might want to adapt this sed to remove non-version strings from tags
+get_python_version() {
+  local python_path="$1"
+  local regex='Python (.+)'
+
+  python_version_raw=$("$python_path" --version)
+
+  if [[ $python_version_raw =~ $regex ]]; then
+    echo -n "${BASH_REMATCH[1]}"
+  else
+    fail "Unable to determine python version"
+  fi
 }
 
-list_all_versions() {
-  # TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-  # Change this function if pyapp has other means of determining installable versions.
-  list_github_tags
+get_python_pip_versions() {
+  local python_path="$1"
+
+  local pip_version_raw; pip_version_raw=$("${python_path}" -m pip --version)
+  local regex='pip (.+) from.*\(python (.+)\)'
+
+  if [[ $pip_version_raw =~ $regex ]]; then
+    echo -n "${BASH_REMATCH[1]}"
+    #ASDF_PYAPP_PYTHON_VERSION="${BASH_REMATCH[2]}" # probably not longer needed
+  else
+    fail "Unable to determine pip version"
+  fi
 }
 
-download_release() {
-  local version filename url
-  version="$1"
-  filename="$2"
+set_python_path() {
+  # 1. if ASDF_PYAPP_PYTHON_PATH is set, use it
+  # 2. if not test /usr/bin/python3. if >= 3.6 use if
+  # 3. if not, test $(which python3)
 
-  # TODO: Adapt the release URL convention for pyapp
-  url="$GH_REPO/archive/v${version}.tar.gz"
+  [ -v ASDF_PYAPP_PYTHON_PATH ] && return
 
-  echo "* Downloading $TOOL_NAME release $version..."
-  curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+  # cd to $HOME to avoid picking up a local python from .toolversions
+  # pipx is best when install with a global python
+  pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
+
+  local paths=("/usr/bin/python3" "$(which python3)")
+
+  for p in ${paths[@]}; do
+    local version=$(get_python_version "$p")
+    if [[ $version =~ ^([0-9]+)\.([0-9]+)\. ]]; then
+      local version_major=${BASH_REMATCH[1]}
+      local version_minor=${BASH_REMATCH[2]}
+      if [ "$version_major" -ge 3 ] && [ "$version_minor" -ge 6 ]; then
+        ASDF_PYAPP_PYTHON_PATH="$p"
+        break
+      fi
+    else
+      continue
+    fi
+  done
+
+  popd > /dev/null || fail "Failed to popd"
 }
+
+get_package_versions() {
+
+  ASDF_PYAPP_PIP_VERSION=$(get_python_pip_versions "$ASDF_PYAPP_PYTHON_PATH")
+
+  local package=$1
+  local pip_version_major
+  pip_version_major=$(echo "${ASDF_PYAPP_PIP_VERSION}" | awk -F. '{print $1}')  # TODO: try to implement in pure bash
+
+  local pip_install_args=""
+  local version_output_raw
+  if [ ${pip_version_major} -gt 20 ]; then
+    pip_install_args+=" --use-deprecated=legacy-resolver"
+  fi
+  version_output_raw=$("${ASDF_PYAPP_PYTHON_PATH}" -m pip install ${pip_install_args} "${package}==" 2>&1) || true
+
+  local regex='.*from versions:(.*)\)'
+  if [[ $version_output_raw =~ $regex ]]; then
+    local version_string="${BASH_REMATCH[1]//','/}"
+    echo "$version_string"
+  else
+    fail "Unable to parse versions for '${package}'"
+  fi
+}
+
+# TODO: check that we're doing sorting correctly (see bin/list-all)
+#sort_versions() {
+#  sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
+#    LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
+#}
 
 install_version() {
-  local install_type="$1"
-  local version="$2"
-  local install_path="$3"
+  local package="$1"
+  local install_type="$2"
+  local full_version="$3"
+  local install_path="$4"
 
-  if [ "$install_type" != "version" ]; then
-    fail "asdf-$TOOL_NAME supports release installs only"
+  local versions=(${full_version//\@/ })
+  local app_version=${versions[0]}
+  if [ "${#versions[@]}" -gt 1 ]; then
+    python_version=${versions[1]}
   fi
 
-  (
-    mkdir -p "$install_path"
-    cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
+  if [ "${install_type}" != "version" ]; then
+    fail "${ASDF_PYAPP_MY_NAME} supports release installs only"
+  fi
 
-    # TODO: Asert pyapp executable exists.
-    local tool_cmd
-    tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
-    test -x "$install_path/bin/$tool_cmd" || fail "Expected $install_path/bin/$tool_cmd to be executable."
+  mkdir -p "${install_path}"
 
-    echo "$TOOL_NAME $version installation was successful!"
-  ) || (
-    rm -rf "$install_path"
-    fail "An error ocurred while installing $TOOL_NAME $version."
-  )
+  # Install pipx
+  local pipx_venv=${install_path}/pipx-venv
+  "${ASDF_PYAPP_PYTHON_PATH}" -m venv "${pipx_venv}"
+  "${pipx_venv}"/bin/pip install pipx
+
+  # install the app
+  local python_arg=""
+  if [ -v python_version ]; then
+    python_arg="--python $python_version"
+  fi
+
+  export PIPX_HOME=${install_path}/pipx-home
+  export PIPX_BIN_DIR=${install_path}/bin
+  "${pipx_venv}"/bin/pipx install $python_arg "$package"=="$app_version"
+
+  echo ""
+  log "Ignore warnings regarding \`pipx ensurepath\` - this is not necessary with asdf."
+  echo ""
+  log "$package $full_version successfully installed!"
 }
+
+
+set_python_path

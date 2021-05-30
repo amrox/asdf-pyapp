@@ -8,9 +8,10 @@
 
 # Contents
 
+- [asdf-pyapp !Build ![Lint](https://github.com/amrox/asdf-pyapp/workflows/Lint/badge.svg)](#asdf-pyapp--)
+- [Contents](#contents)
 - [Dependencies](#dependencies)
 - [Install](#install)
-- [Why?](#why)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -42,7 +43,7 @@ asdf install pyapp latest
 asdf global pyapp latest
 
 # Now pyapp commands are available
-flake8 --help
+cowsay Hi!
 ```
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
