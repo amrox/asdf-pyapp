@@ -136,8 +136,8 @@ install_version() {
 
   echo ""
   log "Ignore warnings regarding \`pipx ensurepath\` - this is not necessary with asdf."
-  echo ""
   log "$package $full_version successfully installed!"
+  echo ""
 }
 
 
