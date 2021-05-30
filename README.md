@@ -1,16 +1,15 @@
 <div align="center">
 
-# asdf-pyapp ![Build](https://github.com/amrox/asdf-pyapp/workflows/Build/badge.svg) ![Lint](https://github.com/amrox/asdf-pyapp/workflows/Lint/badge.svg)
+<h1> asdf-pyapp ![Build](https://github.com/amrox/asdf-pyapp/workflows/Build/badge.svg) ![Lint](https://github.com/amrox/asdf-pyapp/workflows/Lint/badge.svg) </h1>
 
 [pyapp](https://github.com/amrox/pyapp) plugin for the [asdf version manager](https://asdf-vm.com).
 
 </div>
 
-# WARNING: The README is still boilerplate from the template and is not accurate yet.
+<h2> WARNING: The README is still boilerplate from the template and is not accurate yet. </h2>
 
 # Contents
 
-- [asdf-pyapp !Build ![Lint](https://github.com/amrox/asdf-pyapp/workflows/Lint/badge.svg)](#asdf-pyapp--)
 - [Contents](#contents)
 - [Dependencies](#dependencies)
 - [Install](#install)
