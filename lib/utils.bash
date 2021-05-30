@@ -50,11 +50,12 @@ set_python_path() {
   local paths=("/usr/bin/python3" "$(which python3)")
 
   for p in "${paths[@]}"; do
-    local version=$(get_python_version "$p")
-    if [[ $version =~ ^([0-9]+)\.([0-9]+)\. ]]; then
-      local version_major=${BASH_REMATCH[1]}
-      local version_minor=${BASH_REMATCH[2]}
-      if [ "$version_major" -ge 3 ] && [ "$version_minor" -ge 6 ]; then
+    local python_version
+    python_version=$(get_python_version "$p")
+    if [[ $python_version =~ ^([0-9]+)\.([0-9]+)\. ]]; then
+      local python_version_major=${BASH_REMATCH[1]}
+      local python_version_minor=${BASH_REMATCH[2]}
+      if [ "$python_version_major" -ge 3 ] && [ "$python_version_minor" -ge 6 ]; then
         ASDF_PYAPP_PYTHON_PATH="$p"
         break
       fi
@@ -68,11 +69,15 @@ set_python_path() {
 
 get_package_versions() {
 
-  ASDF_PYAPP_PIP_VERSION=$(get_python_pip_versions "$ASDF_PYAPP_PYTHON_PATH")
-
   local package=$1
-  local pip_version_major
-  pip_version_major=$(echo "${ASDF_PYAPP_PIP_VERSION}" | awk -F. '{print $1}')  # TODO: try to implement in pure bash
+
+  local pip_version
+  pip_version=$(get_python_pip_versions "$ASDF_PYAPP_PYTHON_PATH")
+  if [[ $pip_version =~ ^([0-9]+)\. ]]; then
+    local pip_version_major=${BASH_REMATCH[1]}
+  else
+    fail "Unable to parse pip major version"
+  fi
 
   local pip_install_args=""
   local version_output_raw
