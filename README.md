@@ -6,6 +6,8 @@
 
 </div>
 
+# WARNING: The README is still boilerplate from the template and is not accurate yet.
+
 # Contents
 
 - [asdf-pyapp !Build ![Lint](https://github.com/amrox/asdf-pyapp/workflows/Lint/badge.svg)](#asdf-pyapp--)
