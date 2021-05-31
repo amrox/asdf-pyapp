@@ -132,7 +132,9 @@ install_version() {
 
   export PIPX_HOME=${install_path}/pipx-home
   export PIPX_BIN_DIR=${install_path}/bin
+  pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
   "${pipx_venv}"/bin/pipx install $python_arg "$package"=="$app_version"
+  popd > /dev/null || fail "Failed to popd"
 
   echo ""
   log "Ignore warnings regarding \`pipx ensurepath\` - this is not necessary with asdf."
