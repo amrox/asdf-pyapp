@@ -38,16 +38,19 @@ get_python_pip_versions() {
 
 set_python_path() {
   # 1. if ASDF_PYAPP_DEFAULT_PYTHON_PATH is set, use it
-  # 2. if not test /usr/bin/python3. if >= 3.6 use it
-  # 3. if not, test $(which python3)
+  # 2. if not, test $(which python3). if >= 3.6 use it
+  # 3. if not test /usr/bin/python3
+
+  # TODO: throw error if a python version >= 3.6 can't be found?
 
   [ -v ASDF_PYAPP_DEFAULT_PYTHON_PATH ] && return
 
-  # cd to $HOME to avoid picking up a local python from .toolversions
+  # cd to $HOME to avoid picking up a local python from .tool-versions
   # pipx is best when install with a global python
   pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
 
-  local paths=("/usr/bin/python3" "$(which python3)")
+  #local paths=("/usr/bin/python3" "$(which python3)")
+  local paths=("$(which python3)" "/usr/bin/python3")
 
   for p in "${paths[@]}"; do
     local python_version
@@ -121,21 +124,24 @@ install_version() {
 
   # Install pipx
   local pipx_venv=${install_path}/pipx-venv
+  pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
   #"${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv --copies "${pipx_venv}"
   "${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv "${pipx_venv}"
   "${pipx_venv}"/bin/pip install pipx
+  popd > /dev/null || fail "Failed to popd"
 
   # install the app
   local python_arg=""
   if [ -v python_version ]; then
+    # TODO: this needs to be reworked..
     python_arg="--python $python_version"
   fi
 
   export PIPX_HOME=${install_path}/pipx-home
   export PIPX_BIN_DIR=${install_path}/bin
-  pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
+  #pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
   "${pipx_venv}"/bin/pipx install $python_arg "$package"=="$app_version"
-  popd > /dev/null || fail "Failed to popd"
+  #popd > /dev/null || fail "Failed to popd"
 
   echo ""
   log "Ignore warnings regarding \`pipx ensurepath\` - this is not necessary with asdf."

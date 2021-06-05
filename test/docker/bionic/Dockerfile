@@ -38,8 +38,9 @@ RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch ${ASDF_BRANCH
 
 RUN echo ". $HOME/.asdf/asdf.sh" >> ~/.profile
 
-ARG ASDF_PYTHON_VERSION=3.8.8
-RUN source /root/.asdf/asdf.sh && asdf plugin add python && asdf install python ${ASDF_PYTHON_VERSION}
+RUN source /root/.asdf/asdf.sh && asdf plugin add python
+RUN source /root/.asdf/asdf.sh && asdf install python 3.5.10
+RUN source /root/.asdf/asdf.sh && asdf install python 3.8.10
 
 # Extras:
 #  - groff is required for awscli

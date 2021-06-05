@@ -1,5 +1,3 @@
-ASDF_PYTHON_VERSION=3.8.8
-
 
 in_container () {
   args=($*)
@@ -19,7 +17,6 @@ setup() {
   docker build \
     -f docker/bionic/Dockerfile \
     -t "$TAG" \
-    --build-arg ASDF_PYTHON_VERSION="$ASDF_PYTHON_VERSION" \
     "$SRCROOT"
   docker run --rm -d -it --init --name "$CONTAINER" "$TAG"
   in_container mkdir /root/.asdf/plugins || true
@@ -29,7 +26,7 @@ teardown() {
   docker stop "$CONTAINER"
 }
 
-@test "can install with system python no asdf" {
+@test "install with system python no asdf" {
 
   # asdf python is baked into the container, remove it first
   in_container asdf plugin remove python
@@ -41,9 +38,12 @@ teardown() {
   in_container asdf install cowsay 4.0
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
+
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  assert_output --partial /usr/bin/python3
 }
 
-@test "can install with system python via asdf" {
+@test "install with system python via asdf" {
 
   in_container asdf global python system
 
@@ -54,11 +54,14 @@ teardown() {
   in_container asdf install cowsay 4.0
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
+
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  assert_output --partial /usr/bin/python3
 }
 
-@test "can install with asdf python $ASDF_PYTHON_VERSION" {
+@test "install with asdf python 3.8.10" {
 
-  in_container asdf global python "$ASDF_PYTHON_VERSION"
+  in_container asdf global python 3.8.10
 
   run in_container which python3
   assert_output --partial /root/.asdf/shims/python3
@@ -67,34 +70,67 @@ teardown() {
   in_container asdf install cowsay 4.0
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
+
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  assert_output --partial  /root/.asdf/installs/python/3.8.10/bin/python3
+}
+
+@test "install with asdf python 3.5.10" {
+  # pipx requires python >= 3.6. asdf-pyapp should detect that
+  # the current python version is too low, and try the system python
+
+  in_container asdf global python 3.5.10
+
+  run in_container which python3
+  assert_output --partial /root/.asdf/shims/python3
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf install cowsay 4.0
+  in_container asdf global cowsay 4.0
+  in_container cowsay "woo woo"
+
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  assert_output --partial /usr/bin/python3
 }
 
 @test "check \$ASDF_PYAPP_DEFAULT_PYTHON_PATH works" {
   # When an app is installed without a python version specified,
-  # the asdf-pyapp defaults to /usr/bin/python3. In this test
-  # we override to use our asdf python
+  # the asdf-pyapp defaults to python3 in our $PATH, which is the
+  # asdf shim. We override it to the system python3.
 
-  in_container asdf global python "$ASDF_PYTHON_VERSION"
+  in_container asdf global python 3.8.10
+
+  in_container eval "echo \"export ASDF_PYAPP_DEFAULT_PYTHON_PATH=/usr/bin/python3\" >> /root/.profile"
 
   in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
-  in_container eval "echo \"export ASDF_PYAPP_DEFAULT_PYTHON_PATH=/root/.asdf/shims/python3\" >> /root/.profile"
   in_container asdf install cowsay 4.0
 
   run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
-  refute_output --partial /usr/bin/python3
+  assert_output --partial /usr/bin/python3
 }
 
-@test "tmp 1" {
+@test "wip 1" {
+  skip
 
-  in_container asdf global python "$ASDF_PYTHON_VERSION"
-
-  run in_container which python3
-  assert_output --partial /root/.asdf/shims/python3
-
+  in_container asdf global python system
+  in_container eval "echo \"export ASDF_PYAPP_DEFAULT_PYTHON_PATH=/root/.asdf/shims/python3\" >> /root/.profile"
   in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
-  in_container asdf install cowsay 4.0
-  in_container asdf global cowsay 4.0
-  in_container cowsay "woo woo"
+
+  in_container mkdir project
+  in_container eval "echo \"python 3.9.1\" >> project/.tool-versions"
+  in_container eval "echo \"cowsay 4.0\" >> project/.tool-versions"
+
+  in_container eval "cd project && asdf install"
+
+
+  #run in_container which python3
+  #assert_output --partial /root/.asdf/shims/python3
+
+  #in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  #in_container asdf install cowsay 4.0
+  #in_container asdf global cowsay 4.0
+  #in_container cowsay "woo woo"
+  false
 }
 
 ##################################################
@@ -105,6 +141,7 @@ check_app() {
   local version="$2"
   shift; shift
 
+  in_container asdf global python system
   in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/"$app"
   in_container asdf install "$app" "$version"
   in_container asdf global "$app" "$version"
