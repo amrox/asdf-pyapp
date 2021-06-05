@@ -42,6 +42,25 @@ RUN source /root/.asdf/asdf.sh && asdf plugin add python
 RUN source /root/.asdf/asdf.sh && asdf install python 3.5.10
 RUN source /root/.asdf/asdf.sh && asdf install python 3.8.10
 
+RUN source /root/.asdf/asdf.sh && asdf plugin add direnv
+RUN source /root/.asdf/asdf.sh && asdf install direnv 2.28.0
+
+# NOTE: direnv hook only works for interactive shells
+RUN echo -e '#eval "$(asdf exec direnv hook bash)"\n\
+  direnv() { asdf exec direnv "$@"; }\n'\
+  >> ~/setup-direnv.bash
+
+#RUN echo -e 'eval "$(asdf exec direnv export bash)"\n\
+#  direnv() { asdf exec direnv "$@"; }\n'\
+#  >> ~/setup-direnv.bash
+
+## Hook direnv into your shell.
+#RUN echo "eval \"\$(asdf exec direnv hook bash)\"" >> ~/.profile
+## A shortcut for asdf managed direnv.
+#RUN echo "eval direnv() { asdf exec direnv \"\$@\"; }" >> ~/.profile
+## Make the 'use asdf' feature available:
+RUN mkdir -p ~/.config/direnv && echo "source \"\$(asdf direnv hook asdf)\"" >> ~/.config/direnv/direnvrc
+
 # Extras:
 #  - groff is required for awscli
 RUN apt-get update \

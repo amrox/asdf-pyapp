@@ -49,7 +49,11 @@ set_python_path() {
   # pipx is best when install with a global python
   pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
 
-  #local paths=("/usr/bin/python3" "$(which python3)")
+  # run direnv in $HOME to escape any direnv we might already be in
+  if type -P direnv &>/dev/null; then
+    eval "$(direnv export bash)"
+  fi
+
   local paths=("$(which python3)" "/usr/bin/python3")
 
   for p in "${paths[@]}"; do

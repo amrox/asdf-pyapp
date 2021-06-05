@@ -133,6 +133,36 @@ teardown() {
   false
 }
 
+setup_direnv() {
+
+  in_container asdf global direnv 2.28.0
+  in_container eval 'echo "source setup-direnv.bash" >> ~/.profile'
+
+  DIRENV="direnv allow . && eval \"\$(direnv export bash)\""
+}
+
+@test "install with local python in direnv" {
+
+  setup_direnv
+
+  in_container asdf global python system
+  in_container python3 --version
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+
+  in_container mkdir project
+  in_container eval "echo \"python 3.8.10\" >> project/.tool-versions"
+  in_container eval "echo \"cowsay 4.0\" >> project/.tool-versions"
+  in_container eval "echo \"use asdf\" >> project/.envrc"
+
+  in_container eval "cd project && $DIRENV && which python3"
+
+  in_container eval "cd project && $DIRENV && asdf install"
+  in_container eval "cd project && $DIRENV && which cowsay"
+
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  assert_output --partial /usr/bin/python3
+}
+
 ##################################################
 # Individual App Checks
 
