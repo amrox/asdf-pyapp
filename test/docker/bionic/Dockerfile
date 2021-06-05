@@ -3,6 +3,7 @@ FROM ubuntu:18.04
 SHELL ["/bin/bash", "-c"]
 ARG DEBIAN_FRONTEND noninteractive
 
+# Deps required for asdf
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -10,6 +11,7 @@ RUN apt-get update \
     git \
     && rm -rf /var/lib/apt
 
+# Install system python3
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     python3 \
@@ -18,11 +20,11 @@ RUN apt-get update \
     python3-wheel \
     && rm -rf /var/lib/apt
 
+# Deps required to build python via asdf
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     make \
     build-essential \
-    groff \
     libbz2-dev \
     libreadline-dev \
     libssl-dev \
@@ -38,10 +40,19 @@ RUN echo ". $HOME/.asdf/asdf.sh" >> ~/.profile
 ARG ASDF_PYTHON_VERSION=3.8.8
 RUN source /root/.asdf/asdf.sh && asdf plugin add python && asdf install python ${ASDF_PYTHON_VERSION}
 
-#STOPSIGNAL SIGKILL
+# Extras:
+#  - groff is required for awscli
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    groff \
+    && rm -rf /var/lib/apt
 
 WORKDIR /root
 COPY . asdf-pyapp
+
+# app pipenv needs this, and probably generally a good thing
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 ENTRYPOINT ["/bin/bash", "-l", "-c"]
 CMD ["tail", "-f", "/dev/null"]

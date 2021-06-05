@@ -83,7 +83,8 @@ teardown() {
     assert_output --partial /usr/bin/python3
 }
 
-#APPS=(ansible-base awscli black conan flake8 hy pipenv)
+##################################################
+# Individual App Checks
 
 check_app() {
     local app="$1"
@@ -134,5 +135,10 @@ check_app() {
 @test "check app mypy latest" {
     check_app mypy latest mypy --version
 }
+
+@test "check app pipenv latest" {
+    check_app pipenv latest pipenv --version
+}
+
 
 
