@@ -70,18 +70,18 @@ teardown() {
 }
 
 @test "check \$ASDF_PYAPP_DEFAULT_PYTHON_PATH works" {
+  # When an app is installed without a python version specified,
+  # the asdf-pyapp defaults to /usr/bin/python3. In this test
+  # we override to use our asdf python
 
   in_container asdf global python "$ASDF_PYTHON_VERSION"
 
-  run in_container which python3
-  assert_output --partial /root/.asdf/shims/python3
-
   in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
-  in_container "echo \"ASDF_PYAPP_DEFAULT_PYTHON_PATH=/usr/bin/python3\" >> /root/.profile"
+  in_container eval "echo \"export ASDF_PYAPP_DEFAULT_PYTHON_PATH=/root/.asdf/shims/python3\" >> /root/.profile"
   in_container asdf install cowsay 4.0
 
   run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
-  assert_output --partial /usr/bin/python3
+  refute_output --partial /usr/bin/python3
 }
 
 @test "tmp 1" {
