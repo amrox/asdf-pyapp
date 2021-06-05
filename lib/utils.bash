@@ -37,11 +37,11 @@ get_python_pip_versions() {
 }
 
 set_python_path() {
-  # 1. if ASDF_PYAPP_PYTHON_PATH is set, use it
+  # 1. if ASDF_PYAPP_DEFAULT_PYTHON_PATH is set, use it
   # 2. if not test /usr/bin/python3. if >= 3.6 use if
   # 3. if not, test $(which python3)
 
-  [ -v ASDF_PYAPP_PYTHON_PATH ] && return
+  [ -v ASDF_PYAPP_DEFAULT_PYTHON_PATH ] && return
 
   # cd to $HOME to avoid picking up a local python from .toolversions
   # pipx is best when install with a global python
@@ -56,7 +56,7 @@ set_python_path() {
       local python_version_major=${BASH_REMATCH[1]}
       local python_version_minor=${BASH_REMATCH[2]}
       if [ "$python_version_major" -ge 3 ] && [ "$python_version_minor" -ge 6 ]; then
-        ASDF_PYAPP_PYTHON_PATH="$p"
+        ASDF_PYAPP_DEFAULT_PYTHON_PATH="$p"
         break
       fi
     else
@@ -72,7 +72,7 @@ get_package_versions() {
   local package=$1
 
   local pip_version
-  pip_version=$(get_python_pip_versions "$ASDF_PYAPP_PYTHON_PATH")
+  pip_version=$(get_python_pip_versions "$ASDF_PYAPP_DEFAULT_PYTHON_PATH")
   if [[ $pip_version =~ ^([0-9]+)\. ]]; then
     local pip_version_major=${BASH_REMATCH[1]}
   else
@@ -84,7 +84,7 @@ get_package_versions() {
   if [ "${pip_version_major}" -gt 20 ]; then
     pip_install_args+=" --use-deprecated=legacy-resolver"
   fi
-  version_output_raw=$("${ASDF_PYAPP_PYTHON_PATH}" -m pip install ${pip_install_args} "${package}==" 2>&1) || true
+  version_output_raw=$("${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m pip install ${pip_install_args} "${package}==" 2>&1) || true
 
   local regex='.*from versions:(.*)\)'
   if [[ $version_output_raw =~ $regex ]]; then
@@ -121,7 +121,8 @@ install_version() {
 
   # Install pipx
   local pipx_venv=${install_path}/pipx-venv
-  "${ASDF_PYAPP_PYTHON_PATH}" -m venv "${pipx_venv}"
+  #"${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv --copies "${pipx_venv}"
+  "${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv "${pipx_venv}"
   "${pipx_venv}"/bin/pip install pipx
 
   # install the app
