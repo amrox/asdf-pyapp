@@ -38,7 +38,7 @@ get_python_pip_versions() {
 
 set_python_path() {
   # 1. if ASDF_PYAPP_DEFAULT_PYTHON_PATH is set, use it
-  # 2. if not test /usr/bin/python3. if >= 3.6 use if
+  # 2. if not test /usr/bin/python3. if >= 3.6 use it
   # 3. if not, test $(which python3)
 
   [ -v ASDF_PYAPP_DEFAULT_PYTHON_PATH ] && return
