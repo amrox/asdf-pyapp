@@ -6,7 +6,9 @@
 
 </div>
 
-## WARNING: The README is still boilerplate from the template and is not accurate yet.
+Plugin to install arbitrary Python Applications in isolated environments.
+
+## WARNING: The README is WIP
 
 # Contents
 
@@ -18,50 +20,59 @@
 
 # Dependencies
 
-- `bash`, `curl`, `tar`: generic POSIX utilities.
-- `SOME_ENV_VAR`: set this environment variable in your shell config to load the correct version of tool x.
+- `python`/`python3` >= 3.6 with pip and venv
+- OR (coming soon) [asdf-python](https://github.com/danhper/asdf-python) installed
 
 # Install
 
 Plugin:
 
 ```shell
-asdf plugin add pyapp
-# or
-asdf plugin add pyapp https://github.com/amrox/asdf-pyapp.git
+asdf plugin add <python app> https://github.com/amrox/asdf-pyapp.git
+# for example
+asdf plugin add cowsay https://github.com/amrox/asdf-pyapp.git
 ```
 
-pyapp:
+Example using `cowsay`:
 
 ```shell
 # Show all installable versions
-asdf list-all pyapp
+asdf list-all cowsay
 
 # Install specific version
-asdf install pyapp latest
+asdf install cowsay latest
 
 # Set a version globally (on your ~/.tool-versions file)
-asdf global pyapp latest
+asdf global cowsay latest
 
-# Now pyapp commands are available
-cowsay Hi!
+# Now cowsay commands are available
+cowsay "Hi!"
 ```
 
-Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
-install & manage versions.
+Some compatible apps:
 
-# Usage
 
-## Some Compatible Apps
+| App                                               | Command to add Plugin                                                  | Notes                                                                                  |
+| ------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [ansible](https://pypi.org/project/ansible-base/) | `asdf plugin add ansible-base https://github.com/amrox/asdf-pyapp.git` | Note app name is `ansible-base`                                                        |
+| [awscli](https://pypi.org/project/awscli/)        | `asdf plugin add awscli https://github.com/amrox/asdf-pyapp.git`       |                                                                                        |
+| [black](https://pypi.org/project/black/)          | `asdf plugin add black https://github.com/amrox/asdf-pyapp.git`        | [`black latest` does not work currently](https://github.com/amrox/asdf-pyapp/issues/2) |
+| [conan](https://pypi.org/project/conan/)          | `asdf plugin add conan https://github.com/amrox/asdf-pyapp.git`        |                                                                                        |
+| [cowsay](https://pypi.org/project/cowsay/)        | `asdf plugin add cowsay https://github.com/amrox/asdf-pyapp.git`       |                                                                                        |
+| [doit](https://pypi.org/project/doit/)            | `asdf plugin add doit https://github.com/amrox/asdf-pyapp.git`         |                                                                                        |
+| [flake8](https://pypi.org/project/flake8/)        | `asdf plugin add flake8 https://github.com/amrox/asdf-pyapp.git`       |                                                                                        |
+| [hy](https://pypi.org/project/hy/)                | `asdf plugin add hy https://github.com/amrox/asdf-pyapp.git`           |                                                                                        |
+| [mymy](https://pypi.org/project/mymy/)            | `asdf plugin add mypy https://github.com/amrox/asdf-pyapp.git`         |                                                                                        |
+| [pipenv](https://pypi.org/project/pipenv/)        | `asdf plugin add pipenv https://github.com/amrox/asdf-pyapp.git`       |                                                                                        |
 
-| ansible (ansible-base) | |
-| awscli | |
-| black | |
-| conan | |
-| cowsay | |
-| flake8 | |
-| hy | |
-| pipenv | |
+
+Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to install & manage versions.
+
+# Configuration
+
+## Environment Variables
+
+- `ASDF_PYAPP_DEFAULT_PYTHON_PATH` - Path to a `python`/`python3`  binary this plugin should use. Default is unset. See Python Resolution section for more details.
 
 # Contributing
 
