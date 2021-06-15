@@ -163,6 +163,16 @@ setup_direnv() {
   assert_output --partial /usr/bin/python3
 }
 
+@test "install with python plugin integration" {
+
+  in_container asdf global python system
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf install cowsay 4.0@3.8.2
+  in_container asdf local cowsay 4.0@3.8.2
+  in_container cowsay "woo woo"
+
+}
+
 ##################################################
 # Individual App Checks
 

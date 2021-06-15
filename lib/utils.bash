@@ -109,15 +109,21 @@ get_package_versions() {
 #}
 
 install_version() {
+  set -x
   local package="$1"
   local install_type="$2"
   local full_version="$3"
   local install_path="$4"
 
+  local venv_args=""
+
   local versions=(${full_version//\@/ })
   local app_version=${versions[0]}
   if [ "${#versions[@]}" -gt 1 ]; then
     python_version=${versions[1]}
+    asdf install python "$python_version"
+    ASDF_PYAPP_DEFAULT_PYTHON_PATH=$(ASDF_PYTHON_VERSION="$python_version" asdf which python3)
+    venv_args="--copies"
   fi
 
   if [ "${install_type}" != "version" ]; then
@@ -130,21 +136,16 @@ install_version() {
   local pipx_venv=${install_path}/pipx-venv
   pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
   #"${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv --copies "${pipx_venv}"
-  "${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv "${pipx_venv}"
+  #"${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv "${pipx_venv}"
+  "${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv "$venv_args" "${pipx_venv}"
   "${pipx_venv}"/bin/pip install pipx
   popd > /dev/null || fail "Failed to popd"
-
-  # install the app
-  local python_arg=""
-  if [ -v python_version ]; then
-    # TODO: this needs to be reworked..
-    python_arg="--python $python_version"
-  fi
 
   export PIPX_HOME=${install_path}/pipx-home
   export PIPX_BIN_DIR=${install_path}/bin
   #pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
-  "${pipx_venv}"/bin/pipx install $python_arg "$package"=="$app_version"
+  #"${pipx_venv}"/bin/pipx install $python_arg "$package"=="$app_version"
+  "${pipx_venv}"/bin/pipx install "$package"=="$app_version"
   #popd > /dev/null || fail "Failed to popd"
 
   echo ""
