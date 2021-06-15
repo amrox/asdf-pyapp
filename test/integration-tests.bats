@@ -165,12 +165,37 @@ setup_direnv() {
 
 @test "install with python plugin integration" {
 
+  local cowsay_ver="4.0"
+  local python_ver="3.8.2"
+  local combined_ver="${cowsay_ver}@${python_ver}"
+
   in_container asdf global python system
+
   in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
-  in_container asdf install cowsay 4.0@3.8.2
-  in_container asdf local cowsay 4.0@3.8.2
+  in_container asdf install cowsay "$combined_ver"
+  in_container asdf local cowsay "$combined_ver"
   in_container cowsay "woo woo"
 
+  # by default, the venv is created with "--copies", so python should not be a symlink
+  refute in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+
+  # python3 should be the right version
+  run in_container /root/.asdf/installs/cowsay/"$combined_ver"/pipx-venv/bin/python3 --version
+  assert_output --partial "$python_ver"
+}
+
+@test "install with python plugin integration without python plugin installed" {
+
+  local cowsay_ver="4.0"
+  local python_ver="3.8.2"
+  local combined_ver="${cowsay_ver}@${python_ver}"
+
+  in_container asdf plugin remove python
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  run in_container asdf install cowsay "$combined_ver"
+  # TODO: not sure I like matching on error message text...
+  assert_output --partial "asdf python plugin is not installed!"
 }
 
 ##################################################

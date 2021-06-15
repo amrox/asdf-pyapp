@@ -119,6 +119,11 @@ install_version() {
   local versions=(${full_version//\@/ })
   local app_version=${versions[0]}
   if [ "${#versions[@]}" -gt 1 ]; then
+
+    if ! asdf plugin list | grep python ; then
+      fail "Cannot install $1 $3 - asdf python plugin is not installed!"
+    fi
+
     python_version=${versions[1]}
     asdf install python "$python_version"
     ASDF_PYAPP_DEFAULT_PYTHON_PATH=$(ASDF_PYTHON_VERSION="$python_version" asdf which python3)
@@ -126,7 +131,7 @@ install_version() {
   fi
 
   if [ "${install_type}" != "version" ]; then
-    fail "${ASDF_PYAPP_MY_NAME} supports release installs only"
+    fail "supports release installs only"
   fi
 
   mkdir -p "${install_path}"
