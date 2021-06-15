@@ -134,7 +134,6 @@ install_version() {
   # Install pipx
   local pipx_venv=${install_path}/pipx-venv
   pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
-  #"${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv --copies "${pipx_venv}"
   #"${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv "${pipx_venv}"
   "${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv "$venv_args" "${pipx_venv}"
   "${pipx_venv}"/bin/pip install pipx
@@ -143,7 +142,6 @@ install_version() {
   export PIPX_HOME=${install_path}/pipx-home
   export PIPX_BIN_DIR=${install_path}/bin
   #pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
-  #"${pipx_venv}"/bin/pipx install $python_arg "$package"=="$app_version"
   "${pipx_venv}"/bin/pipx install "$package"=="$app_version"
   #popd > /dev/null || fail "Failed to popd"
 
