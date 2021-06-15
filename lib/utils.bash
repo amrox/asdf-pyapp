@@ -109,7 +109,6 @@ get_package_versions() {
 #}
 
 install_version() {
-  set -x
   local package="$1"
   local install_type="$2"
   local full_version="$3"
