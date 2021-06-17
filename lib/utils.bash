@@ -122,6 +122,7 @@ install_version() {
   local install_path="$4"
 
   local venv_args=""
+  local pip_args="--disable-pip-version-check"
 
   local versions=(${full_version//\@/ })
   local app_version=${versions[0]}
@@ -150,7 +151,7 @@ install_version() {
   # Make a venv for the app
   local venv_path="$install_path"/venv
   "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv "$venv_args" "$venv_path"
-  "$venv_path"/bin/python3 -m pip install --upgrade pip
+  "$venv_path"/bin/python3 -m pip install ${pip_args} --upgrade pip wheel
 
   # Install the App
   "$venv_path"/bin/python3 -m pip install "$package"=="$app_version"
@@ -159,7 +160,7 @@ install_version() {
   local link_apps_venv="$install_path"/tmp/link_apps
   mkdir -p "$(dirname "$link_apps_venv")"
   "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv "$link_apps_venv"
-  "$link_apps_venv"/bin/python3 -m pip install -r "$plugin_dir"/lib/helpers/link_apps/requirements.txt
+  "$link_apps_venv"/bin/python3 -m pip install ${pip_args} -r "$plugin_dir"/lib/helpers/link_apps/requirements.txt
 
   # Link Apps
   "$link_apps_venv"/bin/python3 "$plugin_dir"/lib/helpers/link_apps/link_apps.py "$venv_path" "$package" "$install_path"/bin
