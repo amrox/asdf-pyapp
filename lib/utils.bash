@@ -1,5 +1,5 @@
 ASDF_PYAPP_MY_NAME=asdf-pyapp
-set -x
+ASDF_PYAPP_RESOLVED_PYTHON_PATH=
 
 fail() {
   echo -e "${ASDF_PYAPP_MY_NAME}: [ERROR] $*"
@@ -37,14 +37,17 @@ get_python_pip_versions() {
   fi
 }
 
-set_python_path() {
+resolve_python_path() {
   # 1. if ASDF_PYAPP_DEFAULT_PYTHON_PATH is set, use it
   # 2. if not, test $(which python3). if >= 3.6 use it
   # 3. if not test /usr/bin/python3
 
   # TODO: throw error if a python version >= 3.6 can't be found?
 
-  [ -v ASDF_PYAPP_DEFAULT_PYTHON_PATH ] && return
+  if [ -v ASDF_PYAPP_DEFAULT_PYTHON_PATH ]; then
+    ASDF_PYAPP_RESOLVED_PYTHON_PATH="$ASDF_PYAPP_DEFAULT_PYTHON_PATH"
+    return
+  fi
 
   # cd to $HOME to avoid picking up a local python from .tool-versions
   # pipx is best when install with a global python
@@ -55,7 +58,10 @@ set_python_path() {
     eval "$(direnv export bash)"
   fi
 
-  local paths=("$(which python3)" "/usr/bin/python3")
+  local global_python
+  global_python=$(which python3)
+
+  local paths=("$global_python" "/usr/bin/python3")
 
   for p in "${paths[@]}"; do
     local python_version
@@ -64,7 +70,7 @@ set_python_path() {
       local python_version_major=${BASH_REMATCH[1]}
       local python_version_minor=${BASH_REMATCH[2]}
       if [ "$python_version_major" -ge 3 ] && [ "$python_version_minor" -ge 6 ]; then
-        ASDF_PYAPP_DEFAULT_PYTHON_PATH="$p"
+        ASDF_PYAPP_RESOLVED_PYTHON_PATH="$p"
         break
       fi
     else
@@ -80,7 +86,7 @@ get_package_versions() {
   local package=$1
 
   local pip_version
-  pip_version=$(get_python_pip_versions "$ASDF_PYAPP_DEFAULT_PYTHON_PATH")
+  pip_version=$(get_python_pip_versions "$ASDF_PYAPP_RESOLVED_PYTHON_PATH")
   if [[ $pip_version =~ ^([0-9]+)\. ]]; then
     local pip_version_major=${BASH_REMATCH[1]}
   else
@@ -92,7 +98,7 @@ get_package_versions() {
   if [ "${pip_version_major}" -gt 20 ]; then
     pip_install_args+=" --use-deprecated=legacy-resolver"
   fi
-  version_output_raw=$("${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m pip install ${pip_install_args} "${package}==" 2>&1) || true
+  version_output_raw=$("${ASDF_PYAPP_RESOLVED_PYTHON_PATH}" -m pip install ${pip_install_args} "${package}==" 2>&1) || true
 
   local regex='.*from versions:(.*)\)'
   if [[ $version_output_raw =~ $regex ]]; then
@@ -127,7 +133,7 @@ install_version() {
 
     python_version=${versions[1]}
     asdf install python "$python_version"
-    ASDF_PYAPP_DEFAULT_PYTHON_PATH=$(ASDF_PYTHON_VERSION="$python_version" asdf which python3)
+    ASDF_PYAPP_RESOLVED_PYTHON_PATH=$(ASDF_PYTHON_VERSION="$python_version" asdf which python3)
     venv_args="--copies"
   fi
 
@@ -138,12 +144,13 @@ install_version() {
   mkdir -p "${install_path}"
 
   # switch to home to resolve global asdf shim
-  # TODO: do this resolution in set_python_path
+  # TODO: do this resolution in resolve_python_path
   pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
 
   # Make a venv for the app
   local venv_path="$install_path"/venv
-  "$ASDF_PYAPP_DEFAULT_PYTHON_PATH" -m venv "$venv_args" "$venv_path"
+  "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv "$venv_args" "$venv_path"
+  "$venv_path"/bin/python3 -m pip install --upgrade pip
 
   # Install the App
   "$venv_path"/bin/python3 -m pip install "$package"=="$app_version"
@@ -151,7 +158,7 @@ install_version() {
   # Set up a venv for the linker helper
   local link_apps_venv="$install_path"/tmp/link_apps
   mkdir -p "$(dirname "$link_apps_venv")"
-  "$ASDF_PYAPP_DEFAULT_PYTHON_PATH" -m venv "$link_apps_venv"
+  "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv "$link_apps_venv"
   "$link_apps_venv"/bin/python3 -m pip install -r "$plugin_dir"/lib/helpers/link_apps/requirements.txt
 
   # Link Apps
@@ -161,4 +168,4 @@ install_version() {
 }
 
 
-set_python_path
+resolve_python_path
