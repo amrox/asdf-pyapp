@@ -1,4 +1,5 @@
 ASDF_PYAPP_MY_NAME=asdf-pyapp
+set -x
 
 fail() {
   echo -e "${ASDF_PYAPP_MY_NAME}: [ERROR] $*"
@@ -136,6 +137,10 @@ install_version() {
 
   mkdir -p "${install_path}"
 
+  # switch to home to resolve global asdf shim
+  # TODO: do this resolution in set_python_path
+  pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
+
   # Make a venv for the app
   local venv_path="$install_path"/venv
   "$ASDF_PYAPP_DEFAULT_PYTHON_PATH" -m venv "$venv_args" "$venv_path"
@@ -151,6 +156,8 @@ install_version() {
 
   # Link Apps
   "$link_apps_venv"/bin/python3 "$plugin_dir"/lib/helpers/link_apps/link_apps.py "$venv_path" "$package" "$install_path"/bin
+
+  popd > /dev/null || fail "Failed to popd"
 }
 
 
