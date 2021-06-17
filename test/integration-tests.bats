@@ -39,7 +39,7 @@ teardown() {
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
 
-  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
   assert_output --partial /usr/bin/python3
 }
 
@@ -55,7 +55,7 @@ teardown() {
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
 
-  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
   assert_output --partial /usr/bin/python3
 }
 
@@ -71,7 +71,7 @@ teardown() {
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
 
-  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
   assert_output --partial  /root/.asdf/installs/python/3.8.10/bin/python3
 }
 
@@ -89,7 +89,7 @@ teardown() {
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
 
-  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
   assert_output --partial /usr/bin/python3
 }
 
@@ -105,7 +105,7 @@ teardown() {
   in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
   in_container asdf install cowsay 4.0
 
-  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
   assert_output --partial /usr/bin/python3
 }
 
@@ -159,7 +159,7 @@ setup_direnv() {
   in_container eval "cd project && $DIRENV && asdf install"
   in_container eval "cd project && $DIRENV && which cowsay"
 
-  run in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
   assert_output --partial /usr/bin/python3
 }
 
@@ -177,10 +177,10 @@ setup_direnv() {
   in_container cowsay "woo woo"
 
   # by default, the venv is created with "--copies", so python should not be a symlink
-  refute in_container readlink /root/.asdf/installs/cowsay/4.0/pipx-venv/bin/python3
+  refute in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
 
   # python3 should be the right version
-  run in_container /root/.asdf/installs/cowsay/"$combined_ver"/pipx-venv/bin/python3 --version
+  run in_container /root/.asdf/installs/cowsay/"$combined_ver"/venv/bin/python3 --version
   assert_output --partial "$python_ver"
 }
 
