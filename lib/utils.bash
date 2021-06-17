@@ -136,24 +136,21 @@ install_version() {
 
   mkdir -p "${install_path}"
 
-  # Install pipx
-  local pipx_venv=${install_path}/pipx-venv
-  pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
-  #"${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv "${pipx_venv}"
-  "${ASDF_PYAPP_DEFAULT_PYTHON_PATH}" -m venv "$venv_args" "${pipx_venv}"
-  "${pipx_venv}"/bin/pip install pipx
-  popd > /dev/null || fail "Failed to popd"
+  # Make a venv for the app
+  local venv_path="$install_path"/venv
+  "$ASDF_PYAPP_DEFAULT_PYTHON_PATH" -m venv "$venv_args" "$venv_path"
 
-  export PIPX_HOME=${install_path}/pipx-home
-  export PIPX_BIN_DIR=${install_path}/bin
-  #pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
-  "${pipx_venv}"/bin/pipx install "$package"=="$app_version"
-  #popd > /dev/null || fail "Failed to popd"
+  # Install the App
+  "$venv_path"/bin/python3 -m pip install "$package"=="$app_version"
 
-  echo ""
-  log "Ignore warnings regarding \`pipx ensurepath\` - this is not necessary with asdf."
-  log "$package $full_version successfully installed!"
-  echo ""
+  # Set up a venv for the linker helper
+  local link_apps_venv="$install_path"/tmp/link_apps
+  mkdir -p "$(dirname "$link_apps_venv")"
+  "$ASDF_PYAPP_DEFAULT_PYTHON_PATH" -m venv "$link_apps_venv"
+  "$link_apps_venv"/bin/python3 -m pip install -r "$plugin_dir"/lib/helpers/link_apps/requirements.txt
+
+  # Link Apps
+  "$link_apps_venv"/bin/python3 "$plugin_dir"/lib/helpers/link_apps/link_apps.py "$venv_path" "$package" "$install_path"/bin
 }
 
 
