@@ -60,11 +60,30 @@ resolve_python_path() {
 
   local global_python
   global_python=$(which python3)
+  local pythons=()
 
-  local paths=("$global_python" "/usr/bin/python3")
+  # if global python is an asdf shim, derefence it
+  ASDF_DATA_DIR=${ASDF_DATA_DIR:-"$HOME"/.asdf}
+  local shim_dir="$ASDF_DATA_DIR"/shims
+  if [ "$(dirname "$global_python")" == "$shim_dir" ]; then
+    log "Global python3 appears to be a shim '$global_python', attempting to deference"
+    local shim_python
+    shim_python="$(asdf which python3)"
+    log "Shim resolved to '$shim_python'"
+    pythons+=("$shim_python")
+  else
+    pythons+=("$global_python")
+  fi
 
-  for p in "${paths[@]}"; do
+  # if /usr/bin/python3 exists, add it to the search list
+  # NOTE: /usr/bin/python3 may already be in the search list, but this should be harmless
+  if [ -f /usr/bin/python3 ]; then
+    pythons+=(/usr/bin/python3)
+  fi
+
+  for p in "${pythons[@]}"; do
     local python_version
+    log "Testing '$p' ..."
     python_version=$(get_python_version "$p")
     if [[ $python_version =~ ^([0-9]+)\.([0-9]+)\. ]]; then
       local python_version_major=${BASH_REMATCH[1]}
@@ -79,9 +98,17 @@ resolve_python_path() {
   done
 
   popd > /dev/null || fail "Failed to popd"
+
+  if [ -z "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" ]; then
+    fail "Failed to find python3 >= 3.6"
+  else
+    log "Using python3 at '$ASDF_PYAPP_RESOLVED_PYTHON_PATH'"
+  fi
 }
 
 get_package_versions() {
+
+  # TODO: this uses ASDF_PYAPP_RESOLVED_PYTHON_PATH, but technically python 3.6 isn't required to list versions...
 
   local package=$1
 
@@ -144,10 +171,6 @@ install_version() {
 
   mkdir -p "${install_path}"
 
-  # switch to home to resolve global asdf shim
-  # TODO: do this resolution in resolve_python_path
-  pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
-
   # Make a venv for the app
   local venv_path="$install_path"/venv
   "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv "$venv_args" "$venv_path"
@@ -164,8 +187,6 @@ install_version() {
 
   # Link Apps
   "$link_apps_venv"/bin/python3 "$plugin_dir"/lib/helpers/link_apps/link_apps.py "$venv_path" "$package" "$install_path"/bin
-
-  popd > /dev/null || fail "Failed to popd"
 }
 
 

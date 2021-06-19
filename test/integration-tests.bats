@@ -75,8 +75,8 @@ teardown() {
   assert_output --partial  /root/.asdf/installs/python/3.8.10/bin/python3
 }
 
-@test "install with asdf python 3.5.10" {
-  # pipx requires python >= 3.6. asdf-pyapp should detect that
+@test "install with asdf python 3.5.10 system python 3.6" {
+  # we require python >= 3.6. asdf-pyapp should detect that
   # the current python version is too low, and try the system python
 
   in_container asdf global python 3.5.10
@@ -93,6 +93,21 @@ teardown() {
   assert_output --partial /usr/bin/python3
 }
 
+@test "install with asdf python 3.5.10 no system python3" {
+  # we only have python 3.5, asdf-pyapp should fail
+
+  in_container apt remove -y -f python3 python3-minimal
+
+  in_container asdf global python 3.5.10
+
+  run in_container which python3
+  assert_output --partial /root/.asdf/shims/python3
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  run in_container asdf install cowsay 4.0
+  assert_output --partial "Failed to find python3 >= 3.6"
+}
+
 @test "check \$ASDF_PYAPP_DEFAULT_PYTHON_PATH works" {
   # When an app is installed without a python version specified,
   # the asdf-pyapp defaults to python3 in our $PATH, which is the
@@ -107,30 +122,6 @@ teardown() {
 
   run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
   assert_output --partial /usr/bin/python3
-}
-
-@test "wip 1" {
-  skip
-
-  in_container asdf global python system
-  in_container eval "echo \"export ASDF_PYAPP_DEFAULT_PYTHON_PATH=/root/.asdf/shims/python3\" >> /root/.profile"
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
-
-  in_container mkdir project
-  in_container eval "echo \"python 3.9.1\" >> project/.tool-versions"
-  in_container eval "echo \"cowsay 4.0\" >> project/.tool-versions"
-
-  in_container eval "cd project && asdf install"
-
-
-  #run in_container which python3
-  #assert_output --partial /root/.asdf/shims/python3
-
-  #in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
-  #in_container asdf install cowsay 4.0
-  #in_container asdf global cowsay 4.0
-  #in_container cowsay "woo woo"
-  false
 }
 
 setup_direnv() {
@@ -196,6 +187,13 @@ setup_direnv() {
   run in_container asdf install cowsay "$combined_ver"
   # TODO: not sure I like matching on error message text...
   assert_output --partial "asdf python plugin is not installed!"
+}
+
+
+
+@test "install with asdf via direnv only" {
+  skip
+  # TODO
 }
 
 ##################################################
