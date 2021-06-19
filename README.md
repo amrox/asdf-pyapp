@@ -62,8 +62,11 @@ Some compatible apps:
 | [doit](https://pypi.org/project/doit/)            | `asdf plugin add doit https://github.com/amrox/asdf-pyapp.git`         |                                                                                        |
 | [flake8](https://pypi.org/project/flake8/)        | `asdf plugin add flake8 https://github.com/amrox/asdf-pyapp.git`       |                                                                                        |
 | [hy](https://pypi.org/project/hy/)                | `asdf plugin add hy https://github.com/amrox/asdf-pyapp.git`           |                                                                                        |
+| [meson](https://pypi.org/project/meson/)          | `asdf plugin add meson https://github.com/amrox/asdf-pyapp.git`        |                                                                                        |
 | [mymy](https://pypi.org/project/mymy/)            | `asdf plugin add mypy https://github.com/amrox/asdf-pyapp.git`         |                                                                                        |
 | [pipenv](https://pypi.org/project/pipenv/)        | `asdf plugin add pipenv https://github.com/amrox/asdf-pyapp.git`       |                                                                                        |
+| [salt](https://pypi.org/project/salt/)            | `asdf plugin add salt https://github.com/amrox/asdf-pyapp.git`         |                                                                                        |
+| [sphinx](https://pypi.org/project/Sphinx/)        | `asdf plugin add sphinx https://github.com/amrox/asdf-pyapp.git`       |                                                                                        |
 
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to install & manage versions.

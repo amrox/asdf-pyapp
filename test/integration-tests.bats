@@ -248,10 +248,22 @@ check_app() {
   check_app hy latest hy --version
 }
 
+@test "check app meson latest" {
+  check_app meson latest meson --version
+}
+
 @test "check app mypy latest" {
   check_app mypy latest mypy --version
 }
 
 @test "check app pipenv latest" {
   check_app pipenv latest pipenv --version
+}
+
+@test "check app salt latest" {
+  check_app salt latest salt --version
+}
+
+@test "check app sphinx latest" {
+  check_app sphinx latest sphinx-build --version
 }
