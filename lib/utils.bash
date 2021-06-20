@@ -38,12 +38,11 @@ get_python_pip_versions() {
 }
 
 resolve_python_path() {
-  # if ASDF_PYAPP_DEFAULT_PYTHON_PATH is set, use it, else
-  # 1. test
-  # 2. test $(which python3). if >= 3.6 use it
-  # 3. test /usr/bin/python3
-
-  # TODO: throw error if a python version >= 3.6 can't be found?
+  # if ASDF_PYAPP_DEFAULT_PYTHON_PATH is set, use it, else:
+  # 1. try $(asdf which python)
+  # 2. try $(which python3)
+  # 3. try /usr/bin/python3
+  # TODO: is the /usr/bin/python3 fallback an anti-feature?
 
   if [ -v ASDF_PYAPP_DEFAULT_PYTHON_PATH ]; then
     ASDF_PYAPP_RESOLVED_PYTHON_PATH="$ASDF_PYAPP_DEFAULT_PYTHON_PATH"
@@ -64,15 +63,9 @@ resolve_python_path() {
   local asdf_python
   if asdf_python=$(asdf which python3); then
     pythons+=("$asdf_python")
-  fi
-
-  local global_python
-  global_python=$(which python3)
-
-  # if global python isn't an asdf shim, add it
-  ASDF_DATA_DIR=${ASDF_DATA_DIR:-"$HOME"/.asdf}
-  local shim_dir="$ASDF_DATA_DIR"/shims
-  if [ "$(dirname "$global_python")" != "$shim_dir" ]; then
+  else
+    local global_python
+    global_python=$(which python3)
     pythons+=("$global_python")
   fi
 
