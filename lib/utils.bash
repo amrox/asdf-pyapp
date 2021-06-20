@@ -38,9 +38,10 @@ get_python_pip_versions() {
 }
 
 resolve_python_path() {
-  # 1. if ASDF_PYAPP_DEFAULT_PYTHON_PATH is set, use it
-  # 2. if not, test $(which python3). if >= 3.6 use it
-  # 3. if not test /usr/bin/python3
+  # if ASDF_PYAPP_DEFAULT_PYTHON_PATH is set, use it, else
+  # 1. test
+  # 2. test $(which python3). if >= 3.6 use it
+  # 3. test /usr/bin/python3
 
   # TODO: throw error if a python version >= 3.6 can't be found?
 
@@ -58,20 +59,20 @@ resolve_python_path() {
     eval "$(direnv export bash)"
   fi
 
-  local global_python
-  global_python=$(which python3)
   local pythons=()
 
-  # if global python is an asdf shim, derefence it
+  local asdf_python
+  if asdf_python=$(asdf which python3); then
+    pythons+=("$asdf_python")
+  fi
+
+  local global_python
+  global_python=$(which python3)
+
+  # if global python isn't an asdf shim, add it
   ASDF_DATA_DIR=${ASDF_DATA_DIR:-"$HOME"/.asdf}
   local shim_dir="$ASDF_DATA_DIR"/shims
-  if [ "$(dirname "$global_python")" == "$shim_dir" ]; then
-    log "Global python3 appears to be a shim '$global_python', attempting to deference"
-    local shim_python
-    shim_python="$(asdf which python3)"
-    log "Shim resolved to '$shim_python'"
-    pythons+=("$shim_python")
-  else
+  if [ "$(dirname "$global_python")" != "$shim_dir" ]; then
     pythons+=("$global_python")
   fi
 

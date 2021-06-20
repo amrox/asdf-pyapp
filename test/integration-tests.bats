@@ -145,10 +145,7 @@ setup_direnv() {
   in_container eval "echo \"cowsay 4.0\" >> project/.tool-versions"
   in_container eval "echo \"use asdf\" >> project/.envrc"
 
-  in_container eval "cd project && $DIRENV && which python3"
-
   in_container eval "cd project && $DIRENV && asdf install"
-  in_container eval "cd project && $DIRENV && which cowsay"
 
   run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
   assert_output --partial /usr/bin/python3
@@ -189,11 +186,65 @@ setup_direnv() {
   assert_output --partial "asdf python plugin is not installed!"
 }
 
+@test "install with asdf direnv no shims no global python" {
 
+  # remove regular asdf setup
+  # TODO: this seems fragile, consider refactoring
+  in_container sed -i '/asdf.sh/d' /root/.profile
 
-@test "install with asdf via direnv only" {
-  skip
-  # TODO
+  # add asdf without shims in path
+  # https://github.com/asdf-community/asdf-direnv#pro-tips
+  # TODO: this seems fragile, consider refactoring
+  in_container eval "echo \"PATH=\$PATH:\$HOME/.asdf/bin\" >> /root/.profile"
+  in_container eval "echo source \$HOME/.asdf/lib/asdf.sh >> /root/.profile"
+
+  setup_direnv
+
+  local cowsay_ver="4.0"
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+
+  in_container mkdir project
+  in_container eval "echo \"cowsay 4.0\" >> project/.tool-versions"
+  in_container eval "echo \"use asdf\" >> project/.envrc"
+
+  in_container eval "cd project && $DIRENV && asdf install"
+
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
+  assert_output --partial /usr/bin/python3
+}
+
+@test "install with asdf direnv no shims with global python" {
+
+  # remove regular asdf setup
+  # TODO: this seems fragile, consider refactoring
+  in_container sed -i '/asdf.sh/d' /root/.profile
+
+  # add asdf without shims in path
+  # https://github.com/asdf-community/asdf-direnv#pro-tips
+  # TODO: this seems fragile, consider refactoring
+  in_container eval "echo \"PATH=\$PATH:\$HOME/.asdf/bin\" >> /root/.profile"
+  in_container eval "echo source \$HOME/.asdf/lib/asdf.sh >> /root/.profile"
+
+  setup_direnv
+
+  local cowsay_ver="4.0"
+  local python_ver="3.8.10"
+
+  in_container asdf global python $python_ver
+  in_container asdf install
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+
+  in_container mkdir project
+  in_container eval "echo \"cowsay 4.0\" >> project/.tool-versions"
+  in_container eval "echo \"use asdf\" >> project/.envrc"
+
+  in_container eval "cd project && $DIRENV && asdf install"
+
+  run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
+  #assert_output --partial /usr/bin/python3
+  assert_output --partial  /root/.asdf/installs/python/3.8.10/bin/python3
 }
 
 ##################################################
