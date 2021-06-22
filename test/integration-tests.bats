@@ -77,7 +77,7 @@ teardown() {
 
 @test "install with asdf python 3.5.10 system python 3.6" {
   # we require python >= 3.6. asdf-pyapp should detect that
-  # the current python version is too low, and try the system python
+  # asdf python3 should override the system python3
 
   in_container asdf global python 3.5.10
 
@@ -85,12 +85,8 @@ teardown() {
   assert_output --partial /root/.asdf/shims/python3
 
   in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
-  in_container asdf install cowsay 4.0
-  in_container asdf global cowsay 4.0
-  in_container cowsay "woo woo"
-
-  run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
-  assert_output --partial /usr/bin/python3
+  run in_container asdf install cowsay 4.0
+  assert_output --partial "Failed to find python3 >= 3.6"
 }
 
 @test "install with asdf python 3.5.10 no system python3" {

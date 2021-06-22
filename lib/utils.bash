@@ -46,8 +46,6 @@ resolve_python_path() {
   # if ASDF_PYAPP_DEFAULT_PYTHON_PATH is set, use it, else:
   # 1. try $(asdf which python)
   # 2. try $(which python3)
-  # 3. try /usr/bin/python3
-  # TODO: is the /usr/bin/python3 fallback an anti-feature?
 
   if [ -v ASDF_PYAPP_DEFAULT_PYTHON_PATH ]; then
     ASDF_PYAPP_RESOLVED_PYTHON_PATH="$ASDF_PYAPP_DEFAULT_PYTHON_PATH"
@@ -72,12 +70,6 @@ resolve_python_path() {
     local global_python
     global_python=$(which python3)
     pythons+=("$global_python")
-  fi
-
-  # if /usr/bin/python3 exists, add it to the search list
-  # NOTE: /usr/bin/python3 may already be in the search list, but this should be harmless
-  if [ -f /usr/bin/python3 ]; then
-    pythons+=(/usr/bin/python3)
   fi
 
   for p in "${pythons[@]}"; do
