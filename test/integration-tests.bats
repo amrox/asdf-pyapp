@@ -247,6 +247,18 @@ setup_direnv() {
   assert_output --partial  /root/.asdf/installs/python/3.8.10/bin/python3
 }
 
+@test "check ASDF_PYAPP_VENV_COPY_MODE=1" {
+
+  in_container asdf global python system
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container eval "ASDF_PYAPP_VENV_COPY_MODE=1 asdf install cowsay 4.0"
+  in_container asdf global cowsay 4.0
+  in_container cowsay "woo woo"
+
+  refute in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
+}
+
 ##################################################
 # Individual App Checks
 

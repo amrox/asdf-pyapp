@@ -1,4 +1,9 @@
 ASDF_PYAPP_MY_NAME=asdf-pyapp
+
+# 0: (default) Copy venvs with explicit python version, symlink otherwise.
+# 1: Prefer copies.
+ASDF_PYAPP_VENV_COPY_MODE=${ASDF_PYAPP_VENV_COPY_MODE:-0}
+
 ASDF_PYAPP_RESOLVED_PYTHON_PATH=
 
 fail() {
@@ -156,7 +161,17 @@ install_version() {
     python_version=${versions[1]}
     asdf install python "$python_version"
     ASDF_PYAPP_RESOLVED_PYTHON_PATH=$(ASDF_PYTHON_VERSION="$python_version" asdf which python3)
-    venv_args="--copies"
+  fi
+
+  # check for venv copies
+  if [ "${#versions[@]}" -gt 1 ] || [ "$ASDF_PYAPP_VENV_COPY_MODE" == "1" ]; then
+    # special check for macOS
+    # TODO: write a test for this somehow
+    if [ "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" == "/usr/bin/python3" ] && [[ "$OSTYPE" == "darwin"* ]]; then
+      log "Copying /usr/bin/python3 on macOS does not work, symlinking"
+    else
+      venv_args="--copies"
+    fi
   fi
 
   if [ "${install_type}" != "version" ]; then
