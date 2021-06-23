@@ -8,8 +8,7 @@ A generic Python Application plugin the [asdf version manager](https://asdf-vm.c
 
 ### What is a "Python Application"?
 
-For purposes of this plugin, a Python Application is program that *happens* to be
-written in Python, but otherwise behave like a regular command-line tool.  The term "Python Application" comes from [pipx](https://pypa.github.io/pipx/).
+For purposes of this plugin, a Python Application is program that *happens* to be written in Python, but otherwise behaves like a regular command-line tool.  The term "Python Application" comes from [pipx](https://pypa.github.io/pipx/).
 
 Examples of Python Applications are [awscli](https://pypi.org/project/awscli/) and [conan](https://pypi.org/project/conan/). See below for more compatible applications.
 
