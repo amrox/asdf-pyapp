@@ -176,7 +176,7 @@ install_version() {
 
   # Make a venv for the app
   local venv_path="$install_path"/venv
-  "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv "$venv_args" "$venv_path"
+  "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv $venv_args "$venv_path"
   "$venv_path"/bin/python3 -m pip install ${pip_args} --upgrade pip wheel
 
   # Install the App
