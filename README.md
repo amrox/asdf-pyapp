@@ -67,16 +67,7 @@ This is a non-exhaustive list of Python Applications that work with this plugin.
 
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to install & manage versions.
-
-# Configuration
-
-## Environment Variables
-
-- `ASDF_PYAPP_DEFAULT_PYTHON_PATH` - Path to a `python`/`python3`  binary this plugin should use. Default is unset. See Python Resolution section for more details.
-- `ASDF_PYAPP_VENV_COPY_MODE`:
-  - `0`: (default) Add `--copies` flag to venvs created with a specific Python version. Symlinks otherwise.
-  - `1`: Prefer `--copies` whenever possible (`--copies` does not work with `/usr/bin/python3` on macOS).
-- `ASDF_PYAPP_DEBUG` - Set to `1` for additional logging.
+.
 
 # How it Works
 
@@ -120,6 +111,17 @@ conan 1.36.0@3.8.5
 - `awscli` will be installed with the global Python (see Python Resolution), in an isolated virtual environment
 - Python 3.9.1 will be installed, and then `cowsay` will be installed using that Python (in a venv)
 - `conan` will be installed with Python 3.8.5, but isolated from the project's Python, which is also 3.8.5.
+
+# Configuration
+
+## Environment Variables
+
+- `ASDF_PYAPP_DEFAULT_PYTHON_PATH` - Path to a `python`/`python3`  binary this plugin should use. Default is unset. See Python Resolution section for more details.
+- `ASDF_PYAPP_VENV_COPY_MODE`:
+  - `0`: (default) Add `--copies` flag to venvs created with a specific Python version. Symlinks otherwise.
+  - `1`: Prefer `--copies` whenever possible (`--copies` does not work with `/usr/bin/python3` on macOS).
+- `ASDF_PYAPP_DEBUG` - Set to `1` for additional logging
+
 # Contributing
 
 Contributions of any kind welcome! See the [contributing guide](contributing.md).
