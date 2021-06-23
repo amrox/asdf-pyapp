@@ -7,12 +7,14 @@ ASDF_PYAPP_VENV_COPY_MODE=${ASDF_PYAPP_VENV_COPY_MODE:-0}
 ASDF_PYAPP_RESOLVED_PYTHON_PATH=
 
 fail() {
-  echo -e "${ASDF_PYAPP_MY_NAME}: [ERROR] $*"
+  >&2 echo -e "${ASDF_PYAPP_MY_NAME}: [ERROR] $*"
   exit 1
 }
 
 log() {
-  echo -e "${ASDF_PYAPP_MY_NAME}: $*"
+  if [[ ${ASDF_PYAPP_DEBUG:-} -eq 1 ]]; then
+    >&2 echo -e "${ASDF_PYAPP_MY_NAME}: $*"
+  fi
 }
 
 get_python_version() {
