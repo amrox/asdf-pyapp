@@ -7,13 +7,13 @@ ASDF_PYAPP_VENV_COPY_MODE=${ASDF_PYAPP_VENV_COPY_MODE:-0}
 ASDF_PYAPP_RESOLVED_PYTHON_PATH=
 
 fail() {
-  >&2 echo -e "${ASDF_PYAPP_MY_NAME}: [ERROR] $*"
+  echo >&2 -e "${ASDF_PYAPP_MY_NAME}: [ERROR] $*"
   exit 1
 }
 
 log() {
   if [[ ${ASDF_PYAPP_DEBUG:-} -eq 1 ]]; then
-    >&2 echo -e "${ASDF_PYAPP_MY_NAME}: $*"
+    echo >&2 -e "${ASDF_PYAPP_MY_NAME}: $*"
   fi
 }
 
@@ -33,7 +33,8 @@ get_python_version() {
 get_python_pip_versions() {
   local python_path="$1"
 
-  local pip_version_raw; pip_version_raw=$("${python_path}" -m pip --version)
+  local pip_version_raw
+  pip_version_raw=$("${python_path}" -m pip --version)
   local regex='pip (.+) from.*\(python (.+)\)'
 
   if [[ $pip_version_raw =~ $regex ]]; then
@@ -56,7 +57,7 @@ resolve_python_path() {
 
   # cd to $HOME to avoid picking up a local python from .tool-versions
   # pipx is best when install with a global python
-  pushd "$HOME" > /dev/null || fail "Failed to pushd \$HOME"
+  pushd "$HOME" >/dev/null || fail "Failed to pushd \$HOME"
 
   # run direnv in $HOME to escape any direnv we might already be in
   if type -P direnv &>/dev/null; then
@@ -90,7 +91,7 @@ resolve_python_path() {
     fi
   done
 
-  popd > /dev/null || fail "Failed to popd"
+  popd >/dev/null || fail "Failed to popd"
 
   if [ -z "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" ]; then
     fail "Failed to find python3 >= 3.6"
@@ -148,7 +149,7 @@ install_version() {
   local app_version=${versions[0]}
   if [ "${#versions[@]}" -gt 1 ]; then
 
-    if ! asdf plugin list | grep python ; then
+    if ! asdf plugin list | grep python; then
       fail "Cannot install $1 $3 - asdf python plugin is not installed!"
     fi
 
@@ -191,6 +192,5 @@ install_version() {
   # Link Apps
   "$link_apps_venv"/bin/python3 "$plugin_dir"/lib/helpers/link_apps/link_apps.py "$venv_path" "$package" "$install_path"/bin
 }
-
 
 resolve_python_path

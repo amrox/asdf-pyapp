@@ -10,4 +10,3 @@ source "$(dirname "$0")/../lib/utils.bash"
 # for this plugin... Maybe "install" pipx itself to `downloads`?
 
 exit 0
-
