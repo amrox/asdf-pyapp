@@ -6,12 +6,11 @@ A generic Python Application plugin the [asdf version manager](https://asdf-vm.c
 
 </div>
 
-### What is a "Python Application"?
+**What is a "Python Application"?**
 
 For purposes of this plugin, a Python Application is program that *happens* to be written in Python, but otherwise behaves like a regular command-line tool.  The term "Python Application" comes from [pipx](https://pypa.github.io/pipx/).
 
 Examples of Python Applications are [awscli](https://pypi.org/project/awscli/) and [conan](https://pypi.org/project/conan/). See below for more compatible applications.
-
 
 # Dependencies
 
@@ -121,6 +120,9 @@ conan 1.36.0@3.8.5
   - `1`: Prefer `--copies` whenever possible (`--copies` does not work with `/usr/bin/python3` on macOS).
 - `ASDF_PYAPP_DEBUG` - Set to `1` for additional logging
 
+# Background and Inspiration
+
+asdf-pyapp was inspired by [asdf-hashicorp](https://github.com/asdf-community/asdf-hashicorp) and [pipx](https://pypa.github.io/pipx/) - which is also used under the hood. Big thanks to the creators, contributors, and maintainers of both these projects.
 # Contributing
 
 Contributions of any kind welcome! See the [contributing guide](contributing.md).
