@@ -67,7 +67,7 @@ resolve_python_path() {
   local pythons=()
 
   local asdf_python
-  if asdf_python=$(asdf which python3); then
+  if asdf_python=$(asdf which python3 2>/dev/null); then
     pythons+=("$asdf_python")
   else
     local global_python
