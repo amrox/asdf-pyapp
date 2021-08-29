@@ -61,7 +61,7 @@ resolve_python_path() {
 
   # run direnv in $HOME to escape any direnv we might already be in
   if type -P direnv &>/dev/null; then
-    eval "$(direnv export bash)"
+    eval "$(DIRENV_LOG_FORMAT= direnv export bash)"
   fi
 
   local pythons=()
