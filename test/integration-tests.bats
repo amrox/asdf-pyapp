@@ -279,6 +279,10 @@ check_app() {
   check_app awscli latest aws --version
 }
 
+@test "check app awsebcli latest" {
+  check_app awsebcli latest eb --version
+}
+
 @test "check app black latest" {
   skip
   # TODO: black latest doesn't work for some reason
