@@ -283,6 +283,10 @@ check_app() {
   check_app awsebcli latest eb --version
 }
 
+@test "check app aws-sam-cli latest" {
+  check_app aws-sam-cli latest sam --version
+}
+
 @test "check app black latest" {
   skip
   # TODO: black latest doesn't work for some reason
