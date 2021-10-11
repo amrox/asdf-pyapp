@@ -64,9 +64,9 @@ This is a non-exhaustive list of Python Applications that work with this plugin.
 | [pipenv](https://pypi.org/project/pipenv/)           | `asdf plugin add pipenv https://github.com/amrox/asdf-pyapp.git`       |                                                                                        |
 | [salt](https://pypi.org/project/salt/)               | `asdf plugin add salt https://github.com/amrox/asdf-pyapp.git`         |                                                                                        |
 | [sphinx](https://pypi.org/project/Sphinx/)           | `asdf plugin add sphinx https://github.com/amrox/asdf-pyapp.git`       |                                                                                        |
+| [youtube-dl](https://pypi.org/project/youtube-dl)    | `asdf plugin add youtube-dl https://github.com/amrox/asdf-pyapp.git`   |
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to install & manage versions.
-.
 
 # How it Works
 
