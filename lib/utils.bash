@@ -101,8 +101,11 @@ resolve_python_path() {
 }
 
 get_package_versions() {
-
-  # TODO: this uses ASDF_PYAPP_RESOLVED_PYTHON_PATH, but technically python 3.6 isn't required to list versions...
+  # Returns a newline-separted list of versions. `list-all` must output
+  # versions on one line, so this expects it's output to be further processed.
+  #
+  # TODO: this uses ASDF_PYAPP_RESOLVED_PYTHON_PATH, but technically python 3.6
+  # isn't required to list versions...
 
   local package=$1
 
@@ -123,18 +126,20 @@ get_package_versions() {
 
   local regex='.*from versions:(.*)\)'
   if [[ $version_output_raw =~ $regex ]]; then
-    local version_string="${BASH_REMATCH[1]//','/}"
-    echo "$version_string"
+    local version_substring="${BASH_REMATCH[1]//','/}"
+    # trim whitespace with 'xargs echo' and convert spaces to newlines with 'tr'
+    local version_list
+    version_list=$(echo "$version_substring" | xargs echo | tr " " "\n")
+    echo "$version_list"
   else
     fail "Unable to parse versions for '${package}'"
   fi
 }
 
-# TODO: check that we're doing sorting correctly (see bin/list-all)
-#sort_versions() {
-#  sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
-#    LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
-#}
+sort_versions() {
+  sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
+    LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
+}
 
 install_version() {
   local package="$1"
