@@ -9,5 +9,4 @@ toolname=$(basename "$plugin_dir")
 # shellcheck source=../lib/utils.bash
 source "${plugin_dir}/lib/utils.bash"
 
-# TODO: check that we're doing sorting correctly
-get_package_versions "${toolname}" # | sort_versions | xargs echo
+get_package_versions "${toolname}" | sort_versions | xargs echo
