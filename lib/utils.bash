@@ -122,7 +122,7 @@ get_package_versions() {
   if [ "${pip_version_major}" -gt 20 ]; then
     pip_install_args+=("--use-deprecated=legacy-resolver")
   fi
-  version_output_raw=$("${ASDF_PYAPP_RESOLVED_PYTHON_PATH}" -m pip install "${pip_install_args[@]}" "${package}==" 2>&1) || true
+  version_output_raw=$("${ASDF_PYAPP_RESOLVED_PYTHON_PATH}" -m pip install ${pip_install_args[@]+"${pip_install_args[@]}"} "${package}==" 2>&1) || true
 
   local regex='.*from versions:(.*)\)'
   if [[ $version_output_raw =~ $regex ]]; then
@@ -182,8 +182,8 @@ install_version() {
 
   # Make a venv for the app
   local venv_path="$install_path"/venv
-  "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv "${venv_args[@]}" "$venv_path"
-  "$venv_path"/bin/python3 -m pip install "${pip_args[@]}" --upgrade pip wheel
+  "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv ${venv_args[@]+"${venv_args[@]}"} "$venv_path"
+  "$venv_path"/bin/python3 -m pip install ${pip_args[@]+"${pip_args[@]}"} --upgrade pip wheel
 
   # Install the App
   "$venv_path"/bin/python3 -m pip install "$package"=="$app_version"
