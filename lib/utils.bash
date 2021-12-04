@@ -119,7 +119,7 @@ get_package_versions() {
 
   local pip_install_args=()
   local version_output_raw
-  if [ "${pip_version_major}" -gt 20 ]; then
+  if [ "${pip_version_major}" -ge 20 ]; then
     pip_install_args+=("--use-deprecated=legacy-resolver")
   fi
   version_output_raw=$("${ASDF_PYAPP_RESOLVED_PYTHON_PATH}" -m pip install ${pip_install_args[@]+"${pip_install_args[@]}"} "${package}==" 2>&1) || true
