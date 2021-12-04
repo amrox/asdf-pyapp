@@ -50,7 +50,7 @@ resolve_python_path() {
   # 1. try $(asdf which python)
   # 2. try $(which python3)
 
-  if [ -v ASDF_PYAPP_DEFAULT_PYTHON_PATH ]; then
+  if [ -n "${ASDF_PYAPP_DEFAULT_PYTHON_PATH+x}" ]; then
     ASDF_PYAPP_RESOLVED_PYTHON_PATH="$ASDF_PYAPP_DEFAULT_PYTHON_PATH"
     return
   fi
