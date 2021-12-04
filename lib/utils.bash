@@ -111,15 +111,19 @@ get_package_versions() {
 
   local pip_version
   pip_version=$(get_python_pip_versions "$ASDF_PYAPP_RESOLVED_PYTHON_PATH")
-  if [[ $pip_version =~ ^([0-9]+)\. ]]; then
+  if [[ $pip_version =~ ^([0-9]+)\.([0-9]+)\. ]]; then
     local pip_version_major=${BASH_REMATCH[1]}
+    local pip_version_minor=${BASH_REMATCH[2]}
   else
-    fail "Unable to parse pip major version"
+    fail "Unable to parse pip version"
   fi
 
   local pip_install_args=()
   local version_output_raw
-  if [ "${pip_version_major}" -ge 20 ]; then
+
+  # we rely on the "legacy resolver" to get versions, which was introduced in 20.3
+  if [ "${pip_version_major}" -ge 21 ] ||
+    { [ "${pip_version_major}" -eq 20 ] && [ "${pip_version_minor}" -ge 3 ]; }; then
     pip_install_args+=("--use-deprecated=legacy-resolver")
   fi
   version_output_raw=$("${ASDF_PYAPP_RESOLVED_PYTHON_PATH}" -m pip install ${pip_install_args[@]+"${pip_install_args[@]}"} "${package}==" 2>&1) || true
