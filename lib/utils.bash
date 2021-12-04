@@ -50,7 +50,7 @@ resolve_python_path() {
   # 1. try $(asdf which python)
   # 2. try $(which python3)
 
-  if [ -v ASDF_PYAPP_DEFAULT_PYTHON_PATH ]; then
+  if [ -n "${ASDF_PYAPP_DEFAULT_PYTHON_PATH+x}" ]; then
     ASDF_PYAPP_RESOLVED_PYTHON_PATH="$ASDF_PYAPP_DEFAULT_PYTHON_PATH"
     return
   fi
@@ -117,12 +117,12 @@ get_package_versions() {
     fail "Unable to parse pip major version"
   fi
 
-  local pip_install_args=""
+  local pip_install_args=()
   local version_output_raw
   if [ "${pip_version_major}" -gt 20 ]; then
-    pip_install_args+=" --use-deprecated=legacy-resolver"
+    pip_install_args+=("--use-deprecated=legacy-resolver")
   fi
-  version_output_raw=$("${ASDF_PYAPP_RESOLVED_PYTHON_PATH}" -m pip install ${pip_install_args} "${package}==" 2>&1) || true
+  version_output_raw=$("${ASDF_PYAPP_RESOLVED_PYTHON_PATH}" -m pip install ${pip_install_args[@]+"${pip_install_args[@]}"} "${package}==" 2>&1) || true
 
   local regex='.*from versions:(.*)\)'
   if [[ $version_output_raw =~ $regex ]]; then
@@ -147,8 +147,8 @@ install_version() {
   local full_version="$3"
   local install_path="$4"
 
-  local venv_args=""
-  local pip_args="--disable-pip-version-check"
+  local venv_args=()
+  local pip_args=("--disable-pip-version-check")
 
   local versions=(${full_version//\@/ })
   local app_version=${versions[0]}
@@ -170,7 +170,7 @@ install_version() {
     if [ "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" == "/usr/bin/python3" ] && [[ "$OSTYPE" == "darwin"* ]]; then
       log "Copying /usr/bin/python3 on macOS does not work, symlinking"
     else
-      venv_args="--copies"
+      venv_args+=("--copies")
     fi
   fi
 
@@ -182,8 +182,8 @@ install_version() {
 
   # Make a venv for the app
   local venv_path="$install_path"/venv
-  "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv $venv_args "$venv_path"
-  "$venv_path"/bin/python3 -m pip install ${pip_args} --upgrade pip wheel
+  "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv ${venv_args[@]+"${venv_args[@]}"} "$venv_path"
+  "$venv_path"/bin/python3 -m pip install ${pip_args[@]+"${pip_args[@]}"} --upgrade pip wheel
 
   # Install the App
   "$venv_path"/bin/python3 -m pip install "$package"=="$app_version"
@@ -192,7 +192,7 @@ install_version() {
   local link_apps_venv="$install_path"/tmp/link_apps
   mkdir -p "$(dirname "$link_apps_venv")"
   "$ASDF_PYAPP_RESOLVED_PYTHON_PATH" -m venv "$link_apps_venv"
-  "$link_apps_venv"/bin/python3 -m pip install ${pip_args} -r "$plugin_dir"/lib/helpers/link_apps/requirements.txt
+  "$link_apps_venv"/bin/python3 -m pip install "${pip_args[@]}" -r "$plugin_dir"/lib/helpers/link_apps/requirements.txt
 
   # Link Apps
   "$link_apps_venv"/bin/python3 "$plugin_dir"/lib/helpers/link_apps/link_apps.py "$venv_path" "$package" "$install_path"/bin
