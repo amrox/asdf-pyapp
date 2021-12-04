@@ -1,5 +1,4 @@
-
-in_container () {
+in_container() {
   args=($*)
   docker exec -it "$CONTAINER" bash -l -c "${args[*]@Q}"
 }
@@ -8,7 +7,7 @@ setup() {
   load 'test_helper/bats-support/load'
   load 'test_helper/bats-assert/load'
 
-  MY_DIR="$( cd "$( dirname "$BATS_TEST_FILENAME" )" >/dev/null 2>&1 && pwd )"
+  MY_DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" >/dev/null 2>&1 && pwd)"
   SRCROOT=$(dirname "$MY_DIR")
 
   TAG="asdf-pyapp-integration-bionic"
@@ -32,7 +31,7 @@ teardown() {
   in_container asdf plugin remove python
 
   run in_container which python3
-  assert_output --partial /usr/bin/python3  #TODO: why is --partial required? newline?
+  assert_output --partial /usr/bin/python3 #TODO: why is --partial required? newline?
 
   in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
   in_container asdf install cowsay 4.0
@@ -72,7 +71,7 @@ teardown() {
   in_container cowsay "woo woo"
 
   run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
-  assert_output --partial  /root/.asdf/installs/python/3.8.10/bin/python3
+  assert_output --partial /root/.asdf/installs/python/3.8.10/bin/python3
 }
 
 @test "install with asdf python 3.5.10 system python 3.6" {
@@ -102,6 +101,114 @@ teardown() {
   in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
   run in_container asdf install cowsay 4.0
   assert_output --partial "Failed to find python3 >= 3.6"
+}
+
+@test "check latest with pip version 19.3" {
+
+  local pip_version=19.3.1
+
+  in_container asdf global python 3.8.10
+
+  in_container python3 -m pip install --upgrade pip=="$pip_version"
+
+  run in_container python3 -m pip --version
+  assert_output --partial "$pip_version"
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  run in_container asdf list all cowsay
+  # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
+  # exit nonzero in our function. So just check output for errors for now...
+  refute_output --partial "asdf-pyapp: [ERROR]"
+}
+
+@test "check latest with pip version 20.0" {
+
+  local pip_version=20.0.1
+
+  in_container asdf global python 3.8.10
+
+  in_container python3 -m pip install --upgrade pip=="$pip_version"
+
+  run in_container python3 -m pip --version
+  assert_output --partial "$pip_version"
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  run in_container asdf list all cowsay
+  # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
+  # exit nonzero in our function. So just check output for errors for now...
+  refute_output --partial "asdf-pyapp: [ERROR]"
+}
+
+@test "check latest with pip version 20.1" {
+
+  local pip_version=20.1.1
+
+  in_container asdf global python 3.8.10
+
+  in_container python3 -m pip install --upgrade pip=="$pip_version"
+
+  run in_container python3 -m pip --version
+  assert_output --partial "$pip_version"
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  run in_container asdf list all cowsay
+  # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
+  # exit nonzero in our function. So just check output for errors for now...
+  refute_output --partial "asdf-pyapp: [ERROR]"
+}
+
+@test "check latest with pip version 20.2" {
+
+  local pip_version=20.2.4
+
+  in_container asdf global python 3.8.10
+
+  in_container python3 -m pip install --upgrade pip=="$pip_version"
+
+  run in_container python3 -m pip --version
+  assert_output --partial "$pip_version"
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  run in_container asdf list all cowsay
+  # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
+  # exit nonzero in our function. So just check output for errors for now...
+  refute_output --partial "asdf-pyapp: [ERROR]"
+}
+
+@test "check latest with pip version 20.3" {
+
+  local pip_version=20.3.4
+
+  in_container asdf global python 3.8.10
+
+  in_container python3 -m pip install --upgrade pip=="$pip_version"
+
+  run in_container python3 -m pip --version
+  assert_output --partial "$pip_version"
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  run in_container asdf list all cowsay
+  # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
+  # exit nonzero in our function. So just check output for errors for now...
+  refute_output --partial "asdf-pyapp: [ERROR]"
+}
+
+@test "check latest with pip version 21.3" {
+
+  local pip_version=21.3.1
+
+  in_container asdf global python 3.8.10
+
+  in_container python3 -m pip install --upgrade pip=="$pip_version"
+
+  run in_container python3 -m pip --version
+  assert_output --partial "$pip_version"
+
+  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  run in_container asdf list all cowsay
+  # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
+  # exit nonzero in our function. So just check output for errors for now...
+  refute_output --partial "asdf-pyapp: [ERROR]"
 }
 
 @test "check \$ASDF_PYAPP_DEFAULT_PYTHON_PATH works" {
@@ -240,7 +347,7 @@ setup_direnv() {
 
   run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
   #assert_output --partial /usr/bin/python3
-  assert_output --partial  /root/.asdf/installs/python/3.8.10/bin/python3
+  assert_output --partial /root/.asdf/installs/python/3.8.10/bin/python3
 }
 
 @test "check ASDF_PYAPP_VENV_COPY_MODE=1" {
@@ -261,7 +368,8 @@ setup_direnv() {
 check_app() {
   local app="$1"
   local version="$2"
-  shift; shift
+  shift
+  shift
 
   in_container asdf global python system
   in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/"$app"
