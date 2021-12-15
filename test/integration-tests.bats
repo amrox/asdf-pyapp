@@ -405,6 +405,10 @@ check_app() {
   check_app black 21.5b2 black --version
 }
 
+@test "check app bpython latest" {
+  check_app bpython latest bpython --version
+}
+
 @test "check app conan latest" {
   check_app conan latest conan --version
 }
