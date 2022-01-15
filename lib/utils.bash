@@ -6,6 +6,23 @@ ASDF_PYAPP_VENV_COPY_MODE=${ASDF_PYAPP_VENV_COPY_MODE:-0}
 
 ASDF_PYAPP_RESOLVED_PYTHON_PATH=
 
+if [[ ${ASDF_PYAPP_DEBUG:-} -eq 1 ]]; then
+  # In debug mode, dunp everything to a log file
+  # got a little help from https://askubuntu.com/a/1345538/985855
+
+  ASDF_PYAPP_DEBUG_LOG_PATH="/tmp/${ASDF_PYAPP_MY_NAME}-debug.log"
+  mkdir -p "$(dirname "$ASDF_PYAPP_DEBUG_LOG_PATH")"
+
+  printf "\n\n-------- %s ----------\n\n" "$(date)" >>"$ASDF_PYAPP_DEBUG_LOG_PATH"
+
+  exec > >(tee -ia "$ASDF_PYAPP_DEBUG_LOG_PATH")
+  exec 2> >(tee -ia "$ASDF_PYAPP_DEBUG_LOG_PATH" >&2)
+
+  exec 19>>"$ASDF_PYAPP_DEBUG_LOG_PATH"
+  export BASH_XTRACEFD=19
+  set -x
+fi
+
 fail() {
   echo >&2 -e "${ASDF_PYAPP_MY_NAME}: [ERROR] $*"
   exit 1
