@@ -452,3 +452,7 @@ check_app() {
 @test "check app yawsso latest" {
   check_app yawsso latest yawsso --version
 }
+
+@test "check app pre-commit latest" {
+  check_app pre-commit latest pre-commit --version
+}
