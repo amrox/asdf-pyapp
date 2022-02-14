@@ -444,3 +444,11 @@ check_app() {
 @test "check app sphinx latest" {
   check_app sphinx latest sphinx-build --version
 }
+
+@test "check app aws-ssm-tools latest" {
+  check_app aws-ssm-tools latest ssm-session --version
+}
+
+@test "check app yawsso latest" {
+  check_app yawsso latest yawsso --version
+}
