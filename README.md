@@ -64,6 +64,7 @@ This is a non-exhaustive list of Python Applications that work with this plugin.
 | [meson](https://pypi.org/project/meson/)                 | `asdf plugin add meson https://github.com/amrox/asdf-pyapp.git`         |                                 |
 | [mypy](https://pypi.org/project/mypy/)                   | `asdf plugin add mypy https://github.com/amrox/asdf-pyapp.git`          |                                 |
 | [pipenv](https://pypi.org/project/pipenv/)               | `asdf plugin add pipenv https://github.com/amrox/asdf-pyapp.git`        |                                 |
+| [pre-commit](https://pypi.org/project/pre-commit/)       | `asdf plugin add pre-commit https://github.com/amrox/asdf-pyapp.git`    |                                 |
 | [salt](https://pypi.org/project/salt/)                   | `asdf plugin add salt https://github.com/amrox/asdf-pyapp.git`          |                                 |
 | [sphinx](https://pypi.org/project/Sphinx/)               | `asdf plugin add sphinx https://github.com/amrox/asdf-pyapp.git`        |                                 |
 | [yawsso](https://pypi.org/project/yawsso/)               | `asdf plugin add sphinx https://github.com/amrox/asdf-pyapp.git`        |                                 |
