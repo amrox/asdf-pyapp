@@ -47,28 +47,29 @@ cowsay "Hi!"
 
 This is a non-exhaustive list of Python Applications that work with this plugin.
 
-| App                                                      | Command to add Plugin                                                   | Notes                           |
-| -------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------- |
-| [ansible](https://pypi.org/project/ansible-base/)        | `asdf plugin add ansible-base https://github.com/amrox/asdf-pyapp.git`  | Note app name is `ansible-base` |
-| [awscli](https://pypi.org/project/awscli/)               | `asdf plugin add awscli https://github.com/amrox/asdf-pyapp.git`        |                                 |
-| [awsebcli](https://pypi.org/project/awsebcli/)           | `asdf plugin add awsebcli https://github.com/amrox/asdf-pyapp.git`      |                                 |
-| [aws-sam-cli](https://pypi.org/project/aws-sam-cli/)     | `asdf plugin add aws-sam-cli https://github.com/amrox/asdf-pyapp.git`   |                                 |
-| [aws-ssm-tools](https://pypi.org/project/aws-ssm-tools/) | `asdf plugin add aws-ssm-tools https://github.com/amrox/asdf-pyapp.git` |                                 |
-| [black](https://pypi.org/project/black/)                 | `asdf plugin add black https://github.com/amrox/asdf-pyapp.git`         |                                 |
-| [bpython](https://pypi.org/project/bpython/)             | `asdf plugin add bpython https://github.com/amrox/asdf-pyapp.git`       |                                 |
-| [conan](https://pypi.org/project/conan/)                 | `asdf plugin add conan https://github.com/amrox/asdf-pyapp.git`         |                                 |
-| [cowsay](https://pypi.org/project/cowsay/)               | `asdf plugin add cowsay https://github.com/amrox/asdf-pyapp.git`        |                                 |
-| [doit](https://pypi.org/project/doit/)                   | `asdf plugin add doit https://github.com/amrox/asdf-pyapp.git`          |                                 |
-| [flake8](https://pypi.org/project/flake8/)               | `asdf plugin add flake8 https://github.com/amrox/asdf-pyapp.git`        |                                 |
-| [hy](https://pypi.org/project/hy/)                       | `asdf plugin add hy https://github.com/amrox/asdf-pyapp.git`            |                                 |
-| [meson](https://pypi.org/project/meson/)                 | `asdf plugin add meson https://github.com/amrox/asdf-pyapp.git`         |                                 |
-| [mypy](https://pypi.org/project/mypy/)                   | `asdf plugin add mypy https://github.com/amrox/asdf-pyapp.git`          |                                 |
-| [pipenv](https://pypi.org/project/pipenv/)               | `asdf plugin add pipenv https://github.com/amrox/asdf-pyapp.git`        |                                 |
-| [pre-commit](https://pypi.org/project/pre-commit/)       | `asdf plugin add pre-commit https://github.com/amrox/asdf-pyapp.git`    |                                 |
-| [salt](https://pypi.org/project/salt/)                   | `asdf plugin add salt https://github.com/amrox/asdf-pyapp.git`          |                                 |
-| [sphinx](https://pypi.org/project/Sphinx/)               | `asdf plugin add sphinx https://github.com/amrox/asdf-pyapp.git`        |                                 |
-| [yawsso](https://pypi.org/project/yawsso/)               | `asdf plugin add sphinx https://github.com/amrox/asdf-pyapp.git`        |                                 |
-| [youtube-dl](https://pypi.org/project/youtube-dl/)       | `asdf plugin add sphinx https://github.com/amrox/asdf-pyapp.git`        |                                 |
+| App                                                      | Command to add Plugin                                                   | Notes |
+| -------------------------------------------------------- | ----------------------------------------------------------------------- | ----- |
+| [ansible-base](https://pypi.org/project/ansible-base/)   | `asdf plugin add ansible-base https://github.com/amrox/asdf-pyapp.git`  |       |
+| [ansible-core](https://pypi.org/project/ansible-core/)   | `asdf plugin add ansible-core https://github.com/amrox/asdf-pyapp.git`  |       |
+| [awscli](https://pypi.org/project/awscli/)               | `asdf plugin add awscli https://github.com/amrox/asdf-pyapp.git`        |       |
+| [awsebcli](https://pypi.org/project/awsebcli/)           | `asdf plugin add awsebcli https://github.com/amrox/asdf-pyapp.git`      |       |
+| [aws-sam-cli](https://pypi.org/project/aws-sam-cli/)     | `asdf plugin add aws-sam-cli https://github.com/amrox/asdf-pyapp.git`   |       |
+| [aws-ssm-tools](https://pypi.org/project/aws-ssm-tools/) | `asdf plugin add aws-ssm-tools https://github.com/amrox/asdf-pyapp.git` |       |
+| [black](https://pypi.org/project/black/)                 | `asdf plugin add black https://github.com/amrox/asdf-pyapp.git`         |       |
+| [bpython](https://pypi.org/project/bpython/)             | `asdf plugin add bpython https://github.com/amrox/asdf-pyapp.git`       |       |
+| [conan](https://pypi.org/project/conan/)                 | `asdf plugin add conan https://github.com/amrox/asdf-pyapp.git`         |       |
+| [cowsay](https://pypi.org/project/cowsay/)               | `asdf plugin add cowsay https://github.com/amrox/asdf-pyapp.git`        |       |
+| [doit](https://pypi.org/project/doit/)                   | `asdf plugin add doit https://github.com/amrox/asdf-pyapp.git`          |       |
+| [flake8](https://pypi.org/project/flake8/)               | `asdf plugin add flake8 https://github.com/amrox/asdf-pyapp.git`        |       |
+| [hy](https://pypi.org/project/hy/)                       | `asdf plugin add hy https://github.com/amrox/asdf-pyapp.git`            |       |
+| [meson](https://pypi.org/project/meson/)                 | `asdf plugin add meson https://github.com/amrox/asdf-pyapp.git`         |       |
+| [mypy](https://pypi.org/project/mypy/)                   | `asdf plugin add mypy https://github.com/amrox/asdf-pyapp.git`          |       |
+| [pipenv](https://pypi.org/project/pipenv/)               | `asdf plugin add pipenv https://github.com/amrox/asdf-pyapp.git`        |       |
+| [pre-commit](https://pypi.org/project/pre-commit/)       | `asdf plugin add pre-commit https://github.com/amrox/asdf-pyapp.git`    |       |
+| [salt](https://pypi.org/project/salt/)                   | `asdf plugin add salt https://github.com/amrox/asdf-pyapp.git`          |       |
+| [sphinx](https://pypi.org/project/Sphinx/)               | `asdf plugin add sphinx https://github.com/amrox/asdf-pyapp.git`        |       |
+| [yawsso](https://pypi.org/project/yawsso/)               | `asdf plugin add sphinx https://github.com/amrox/asdf-pyapp.git`        |       |
+| [youtube-dl](https://pypi.org/project/youtube-dl/)       | `asdf plugin add sphinx https://github.com/amrox/asdf-pyapp.git`        |       |
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to install & manage versions.
 

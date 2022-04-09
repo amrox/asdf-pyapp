@@ -379,8 +379,12 @@ check_app() {
   in_container $*
 }
 
-@test "check app ansible latest" {
+@test "check app ansible-base latest" {
   check_app ansible-base latest ansible --version
+}
+
+@test "check app ansible-core latest" {
+  check_app ansible-core latest ansible --version
 }
 
 @test "check app awscli latest" {
