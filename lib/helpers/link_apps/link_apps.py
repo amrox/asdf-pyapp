@@ -10,7 +10,11 @@ def link_apps(
     venv_path: Path, package_name: str, dest_dir: Path, force: bool = False
 ) -> None:
     venv = Venv(venv_path)
-    apps = venv.get_venv_metadata_for_package(package_name, set()).apps
+    venv_metadata = venv.get_venv_metadata_for_package(package_name, set())
+    apps = venv_metadata.apps
+
+    if (Path(__file__).parents[3] / "include_deps").exists():
+        apps = venv_metadata.apps_of_dependencies + apps
 
     os.makedirs(dest_dir, exist_ok=True)
 
