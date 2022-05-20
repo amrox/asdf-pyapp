@@ -426,7 +426,13 @@ check_app() {
 }
 
 @test "check app hy latest" {
-  check_app hy latest hy --version
+  skip
+  # hy latest (0.20.0 atm) does not install with python 3.6
+  check_app hy latest --version
+}
+
+@test "check app hy 0.20.0@3.8.2" {
+  check_app hy 0.20.0@3.8.2 hy --version
 }
 
 @test "check app meson latest" {
