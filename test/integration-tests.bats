@@ -1,6 +1,6 @@
 in_container() {
   args=($*)
-  docker exec -it "$CONTAINER" bash -l -c "${args[*]@Q}"
+  docker exec -it ${extra_docker_options} "$CONTAINER" bash -l -c "${args[*]@Q}"
 }
 
 setup() {
@@ -362,6 +362,24 @@ setup_direnv() {
   refute in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
 }
 
+@test "check ASDF_PYAPP_INCLUDE_DEPS=0 doesn't install binaries of dependencies" {
+  in_container asdf global python 3.8.10
+
+  in_container asdf plugin add ansible /root/asdf-pyapp
+
+  # Ansible should *not* be available
+  in_container ! command -v ansible
+}
+
+@test "check ASDF_PYAPP_INCLUDE_DEPS=1 installs binaries of dependencies" {
+  in_container asdf global python 3.8.10
+
+  extra_docker_options = '-e ASDF_PYAPP_INCLUDE_DEPS=1'
+  in_container asdf plugin add ansible /root/asdf-pyapp
+
+  in_container ansible --version
+}
+
 ##################################################
 # Individual App Checks
 
@@ -377,14 +395,6 @@ check_app() {
   in_container asdf global "$app" "$version"
 
   in_container $*
-}
-
-@test "check app ansible-base latest" {
-  check_app ansible-base latest ansible --version
-}
-
-@test "check app ansible-core latest" {
-  check_app ansible-core latest ansible --version
 }
 
 @test "check app awscli latest" {
