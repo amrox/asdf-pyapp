@@ -6,6 +6,8 @@ on:
   push:
     paths-ignore:
       - "**.md"
+  workflow_dispatch:
+    - "**.md"
 
 jobs:
   plugin_test:
