@@ -1,6 +1,6 @@
 in_container() {
   args=($*)
-  docker exec -it ${extra_docker_options} "$CONTAINER" bash -l -c "${args[*]@Q}"
+  docker exec -it "$CONTAINER" bash -l -c "${args[*]@Q}"
 }
 
 setup() {
@@ -13,16 +13,20 @@ setup() {
   TAG="asdf-pyapp-integration-bionic"
   CONTAINER="${TAG}-container"
 
-  docker build \
+  DOCKER_BUILDKIT=0 docker build \
     -f docker/bionic/Dockerfile \
     -t "$TAG" \
-    "$SRCROOT"
+    "$SRCROOT" || return 1
   docker run --rm -d -it --init --name "$CONTAINER" "$TAG"
   in_container mkdir /root/.asdf/plugins || true
 }
 
 teardown() {
   docker stop "$CONTAINER"
+
+  # wait for container to be _removed_
+  # https://stackoverflow.com/a/57631771/4468
+  while docker container inspect "$CONTAINER" >/dev/null 2>&1; do sleep 1; done
 }
 
 @test "install with system python no asdf" {
@@ -33,7 +37,7 @@ teardown() {
   run in_container which python3
   assert_output --partial /usr/bin/python3 #TODO: why is --partial required? newline?
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   in_container asdf install cowsay 4.0
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
@@ -49,7 +53,7 @@ teardown() {
   run in_container which python3
   assert_output --partial /root/.asdf/shims/python3
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   in_container asdf install cowsay 4.0
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
@@ -65,7 +69,7 @@ teardown() {
   run in_container which python3
   assert_output --partial /root/.asdf/shims/python3
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   in_container asdf install cowsay 4.0
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
@@ -83,7 +87,8 @@ teardown() {
   run in_container which python3
   assert_output --partial /root/.asdf/shims/python3
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
+
   run in_container asdf install cowsay 4.0
   assert_output --partial "Failed to find python3 >= 3.6"
 }
@@ -98,7 +103,8 @@ teardown() {
   run in_container which python3
   assert_output --partial /root/.asdf/shims/python3
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
+
   run in_container asdf install cowsay 4.0
   assert_output --partial "Failed to find python3 >= 3.6"
 }
@@ -114,7 +120,7 @@ teardown() {
   run in_container python3 -m pip --version
   assert_output --partial "$pip_version"
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   run in_container asdf list all cowsay
   # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
   # exit nonzero in our function. So just check output for errors for now...
@@ -132,7 +138,7 @@ teardown() {
   run in_container python3 -m pip --version
   assert_output --partial "$pip_version"
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   run in_container asdf list all cowsay
   # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
   # exit nonzero in our function. So just check output for errors for now...
@@ -150,7 +156,7 @@ teardown() {
   run in_container python3 -m pip --version
   assert_output --partial "$pip_version"
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   run in_container asdf list all cowsay
   # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
   # exit nonzero in our function. So just check output for errors for now...
@@ -168,7 +174,7 @@ teardown() {
   run in_container python3 -m pip --version
   assert_output --partial "$pip_version"
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   run in_container asdf list all cowsay
   # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
   # exit nonzero in our function. So just check output for errors for now...
@@ -186,7 +192,7 @@ teardown() {
   run in_container python3 -m pip --version
   assert_output --partial "$pip_version"
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   run in_container asdf list all cowsay
   # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
   # exit nonzero in our function. So just check output for errors for now...
@@ -204,7 +210,7 @@ teardown() {
   run in_container python3 -m pip --version
   assert_output --partial "$pip_version"
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   run in_container asdf list all cowsay
   # TODO: "asdf list all" seems to mask return codes. It exits 0 even if we
   # exit nonzero in our function. So just check output for errors for now...
@@ -220,7 +226,7 @@ teardown() {
 
   in_container eval "echo \"export ASDF_PYAPP_DEFAULT_PYTHON_PATH=/usr/bin/python3\" >> /root/.profile"
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   in_container asdf install cowsay 4.0
 
   run in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
@@ -241,7 +247,7 @@ setup_direnv() {
 
   in_container asdf global python system
   in_container python3 --version
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
 
   in_container mkdir project
   in_container eval "echo \"python 3.8.10\" >> project/.tool-versions"
@@ -262,7 +268,7 @@ setup_direnv() {
 
   in_container asdf global python system
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   in_container asdf install cowsay "$combined_ver"
   in_container asdf local cowsay "$combined_ver"
   in_container cowsay "woo woo"
@@ -283,7 +289,7 @@ setup_direnv() {
 
   in_container asdf plugin remove python
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   run in_container asdf install cowsay "$combined_ver"
   # TODO: not sure I like matching on error message text...
   assert_output --partial "asdf python plugin is not installed!"
@@ -305,7 +311,7 @@ setup_direnv() {
 
   local cowsay_ver="4.0"
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
 
   in_container mkdir project
   in_container eval "echo \"cowsay 4.0\" >> project/.tool-versions"
@@ -337,7 +343,7 @@ setup_direnv() {
   in_container asdf global python $python_ver
   in_container asdf install
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
 
   in_container mkdir project
   in_container eval "echo \"cowsay 4.0\" >> project/.tool-versions"
@@ -354,7 +360,7 @@ setup_direnv() {
 
   in_container asdf global python system
 
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/cowsay
+  in_container asdf plugin add cowsay /root/asdf-pyapp
   in_container eval "ASDF_PYAPP_VENV_COPY_MODE=1 asdf install cowsay 4.0"
   in_container asdf global cowsay 4.0
   in_container cowsay "woo woo"
@@ -362,22 +368,27 @@ setup_direnv() {
   refute in_container readlink /root/.asdf/installs/cowsay/4.0/venv/bin/python3
 }
 
-@test "check ASDF_PYAPP_INCLUDE_DEPS=0 doesn't install binaries of dependencies" {
+@test "check ASDF_PYAPP_INCLUDE_DEPS=0 doesn't install executables of dependencies" {
+
   in_container asdf global python 3.8.10
 
-  in_container asdf plugin add ansible /root/asdf-pyapp
+  in_container eval "ASDF_PYAPP_INCLUDE_DEPS=0 asdf plugin add ansible /root/asdf-pyapp"
+  in_container asdf install ansible latest
+  in_container asdf global ansible latest
 
-  # Ansible should *not* be available
-  in_container ! command -v ansible
+  ### Ansiblee should *not* be available
+  refute in_container ansible --version
 }
 
-@test "check ASDF_PYAPP_INCLUDE_DEPS=1 installs binaries of dependencies" {
+@test "check ASDF_PYAPP_INCLUDE_DEPS=1 installs executables of dependencies" {
+
   in_container asdf global python 3.8.10
 
-  extra_docker_options = '-e ASDF_PYAPP_INCLUDE_DEPS=1'
-  in_container asdf plugin add ansible /root/asdf-pyapp
+  in_container eval "ASDF_PYAPP_INCLUDE_DEPS=1 asdf plugin add ansible /root/asdf-pyapp"
+  in_container asdf install ansible latest
+  in_container asdf global ansible latest
 
-  in_container ansible --version
+  assert in_container ansible --version
 }
 
 ##################################################
@@ -390,7 +401,7 @@ check_app() {
   shift
 
   in_container asdf global python system
-  in_container cp -r /root/asdf-pyapp /root/.asdf/plugins/"$app"
+  in_container asdf plugin add "$app" /root/asdf-pyapp
   in_container asdf install "$app" "$version"
   in_container asdf global "$app" "$version"
 
