@@ -21,12 +21,13 @@ RUN apt-get update \
   python3-wheel \
   && rm -rf /var/lib/apt
 
-# Deps required to build python via asdf
+# Deps required to build python and common deps via asdf
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
   make \
   build-essential \
   libbz2-dev \
+  libffi-dev \
   libreadline-dev \
   libssl-dev \
   libsqlite3-dev \
