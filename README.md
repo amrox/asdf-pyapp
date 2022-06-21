@@ -50,7 +50,6 @@ This is a non-exhaustive list of Python Applications that work with this plugin.
 | App                                                      | Command to add Plugin                                                                       | Notes                                                              |
 | -------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | [ansible](https://pypi.org/project/ansible/)             | `ASDF_PYAPP_INCLUDE_DEPS=1 asdf plugin add ansible https://github.com/amrox/asdf-pyapp.git` | [(info)](#environment-variables)                                   |
-|                                                          |
 | [awscli](https://pypi.org/project/awscli/)               | `asdf plugin add awscli https://github.com/amrox/asdf-pyapp.git`                            |                                                                    |
 | [awsebcli](https://pypi.org/project/awsebcli/)           | `asdf plugin add awsebcli https://github.com/amrox/asdf-pyapp.git`                          |                                                                    |
 | [aws-sam-cli](https://pypi.org/project/aws-sam-cli/)     | `asdf plugin add aws-sam-cli https://github.com/amrox/asdf-pyapp.git`                       |                                                                    |
