@@ -128,7 +128,7 @@ get_package_versions() {
 
   local pip_version
   pip_version=$(get_python_pip_versions "$ASDF_PYAPP_RESOLVED_PYTHON_PATH")
-  if [[ $pip_version =~ ^([0-9]+)\.([0-9]+)\. ]]; then
+  if [[ $pip_version =~ ^([0-9]+)\.([0-9]+)\.? ]]; then
     local pip_version_major=${BASH_REMATCH[1]}
     local pip_version_minor=${BASH_REMATCH[2]}
   else
